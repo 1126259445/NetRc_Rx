@@ -13,6 +13,7 @@
 #include "Dev_Dht11.h"
 #include "Dev_Pwm.h"
 #include "Dev_Ppm.h"
+#include "Dev_PwmIn.h"
 #include "Dev_Led.h"
 
 /*------------------------------JSON data---------------------------------------*/

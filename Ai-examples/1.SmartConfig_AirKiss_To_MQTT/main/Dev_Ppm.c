@@ -25,6 +25,8 @@
 #include "driver/gpio.h"
 #include "Dev_Ppm.h"
 
+#if (USE_PWM_PPM == RC_PPM_IN)
+
 static const char *TAG = "Dev_Ppm";
 
 //#define PPM_IN_PIN  GPIO_Pin_5
@@ -186,9 +188,10 @@ void Task_Show_Ppm(void *pvParameters)
 
 }
 
-void PPM_Init()
+void RcIn_Init()
 {
     GpioConfig();
     xTaskCreate(Task_Show_Ppm, "Task_Show_Ppm", 1024, NULL, 5, NULL);
 }
 
+#endif

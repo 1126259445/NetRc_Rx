@@ -49,6 +49,7 @@
 #include "Dev_Oled_I2c.h"
 #include "Dev_Pwm.h"
 #include "Dev_Ppm.h"
+#include "Dev_PwmIn.h"
 #include "Dev_Led.h"
 
 void TaskSmartConfigAirKiss2Net(void *parm);
@@ -588,7 +589,7 @@ void app_main(void)
 	ESP_LOGI(TAG, "MqttTopicPub: %s", MqttTopicPub);
 
 	//外设初始化
-	PPM_Init();
+	RcIn_Init();
 	Led_Init();
 	//Pwm_Init();
 	//OLED_I2C_Init();

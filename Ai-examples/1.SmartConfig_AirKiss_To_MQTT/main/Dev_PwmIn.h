@@ -1,5 +1,5 @@
-#ifndef __DEV_PPM_H__
-#define __DEV_PPM_H__
+#ifndef __DEV_PWMIN_H__
+#define __DEV_PWNIN_H__
 
 #include <stdio.h>
 #include "esp_system.h"
@@ -8,7 +8,8 @@
 // 宏定义
 //=============================================================================
 
-#if (USE_PWM_PPM == RC_PPM_IN)
+#if (USE_PWM_PPM == RC_WMM_IN)
+
 typedef struct 
 {
     uint16_t RC_ch[10];
