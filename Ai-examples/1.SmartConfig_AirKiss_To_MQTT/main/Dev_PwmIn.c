@@ -23,6 +23,7 @@
 #include "esp8266/pin_mux_register.h"
 
 #include "driver/gpio.h"
+#include "driver/hw_timer.h"
 #include "Dev_PwmIn.h"
 
 #if (USE_PWM_PPM == RC_PWM_IN)
@@ -41,6 +42,7 @@ static const char *TAG = "Dev_PwmIn";
 
 Rc_t Rc;
 
+static uint32_t hw_time_count = 0;
 /******************************************************************************
  * FunctionName : gpio_intr_handler
  * Description  : gpio interrupt callback funtion
@@ -48,6 +50,22 @@ Rc_t Rc;
  * Returns      : void
 *******************************************************************************/
 extern uint32_t esp_get_time(void);
+
+#define SW_TIME         0   
+#define HW_TIME         1
+#define USE_TIME        HW_TIME
+#define TIM_MAX_VAL     0xFFFFFFFF
+
+static uint32_t get_time_us()
+{
+    uint32_t current_val = 0;
+#if(USE_TIME == SW_TIME)
+    current_val = esp_get_time();
+#else if(USE_TIME == HW_TIME)
+    current_val  = (hw_time_count * 1000000 ) + ((hw_timer_get_load_data() - hw_timer_get_count_data()) / 5);
+#endif
+    return current_val;
+}
 
 static void gpio_0_isr_handler(void *arg)
 {
@@ -57,18 +75,24 @@ static void gpio_0_isr_handler(void *arg)
 
     if(gpio_get_level(GPIO_INPUT_IO_0) == 1)
     {
-        start_time = esp_get_time();
+        start_time = get_time_us();
     }else if(gpio_get_level(GPIO_INPUT_IO_0) == 0)
     {
-        end_time = esp_get_time();
-        Rc.RC_ch[0] = end_time - start_time;
+        end_time = get_time_us();
 
-        Rc.recv_time = esp_get_time();
+        if(end_time > start_time)
+        {
+            Rc.RC_ch[0] = end_time - start_time;
+        }
+        else if(end_time < start_time)
+        {
+            Rc.RC_ch[0] = end_time + (TIM_MAX_VAL - start_time);
+        }
+        
+        Rc.recv_time = get_time_us();
     }
-
-  //      GPIO_REG_WRITE( GPIO_STATUS_W1TC_ADDRESS, GPIO_INPUT_PIN_SEL); //clear interrupt mask
-   //     _xt_isr_unmask(GPIO_INPUT_PIN_SEL); //Enable the GPIO interrupt
 }
+
 static void gpio_1_isr_handler(void *arg)
 {
     static uint32_t start_time = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
@@ -76,18 +100,23 @@ static void gpio_1_isr_handler(void *arg)
 
     if(gpio_get_level(GPIO_INPUT_IO_1) == 1)
     {
-        start_time = esp_get_time();
+        start_time = get_time_us();
     }else if(gpio_get_level(GPIO_INPUT_IO_1) == 0)
     {
-        end_time = esp_get_time();
-        Rc.RC_ch[1] = end_time - start_time;
+        end_time = get_time_us();
+        if(end_time > start_time)
+        {
+            Rc.RC_ch[1] = end_time - start_time;
+        }
+        else if(end_time < start_time)
+        {
+            Rc.RC_ch[1] = end_time + (TIM_MAX_VAL - start_time);
+        }
 
-        Rc.recv_time = esp_get_time();
+        Rc.recv_time = get_time_us();
     }
-
-  //      GPIO_REG_WRITE( GPIO_STATUS_W1TC_ADDRESS, GPIO_INPUT_PIN_SEL); //clear interrupt mask
-   //     _xt_isr_unmask(GPIO_INPUT_PIN_SEL); //Enable the GPIO interrupt
 }
+
 static void gpio_2_isr_handler(void *arg)
 {
     static uint32_t start_time = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
@@ -95,17 +124,23 @@ static void gpio_2_isr_handler(void *arg)
 
     if(gpio_get_level(GPIO_INPUT_IO_2) == 1)
     {
-        start_time = esp_get_time();
+        start_time = get_time_us();
     }else if(gpio_get_level(GPIO_INPUT_IO_2) == 0)
     {
-        end_time = esp_get_time();
-        Rc.RC_ch[2] = end_time - start_time;
-        Rc.recv_time = esp_get_time();
-    }
+        end_time = get_time_us();
+        if(end_time > start_time)
+        {
+            Rc.RC_ch[2] = end_time - start_time;
+        }
+        else if(end_time < start_time)
+        {
+            Rc.RC_ch[2] = end_time + (TIM_MAX_VAL - start_time);
+        }
 
-  //      GPIO_REG_WRITE( GPIO_STATUS_W1TC_ADDRESS, GPIO_INPUT_PIN_SEL); //clear interrupt mask
-   //     _xt_isr_unmask(GPIO_INPUT_PIN_SEL); //Enable the GPIO interrupt
+        Rc.recv_time = get_time_us();
+    }
 }
+
 static void gpio_3_isr_handler(void *arg)
 {
     static uint32_t start_time = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
@@ -113,17 +148,22 @@ static void gpio_3_isr_handler(void *arg)
 
     if(gpio_get_level(GPIO_INPUT_IO_3) == 1)
     {
-        start_time = esp_get_time();
+        start_time = get_time_us();
     }else if(gpio_get_level(GPIO_INPUT_IO_3) == 0)
     {
-        end_time = esp_get_time();
-        Rc.RC_ch[3] = end_time - start_time;
-        Rc.recv_time = esp_get_time();
+        end_time = get_time_us();
+        if(end_time > start_time)
+        {
+            Rc.RC_ch[3] = end_time - start_time;
+        }
+        else if(end_time < start_time)
+        {
+            Rc.RC_ch[3] = end_time + (TIM_MAX_VAL - start_time);
+        }
+        Rc.recv_time = get_time_us();
     }
-
-  //      GPIO_REG_WRITE( GPIO_STATUS_W1TC_ADDRESS, GPIO_INPUT_PIN_SEL); //clear interrupt mask
-   //     _xt_isr_unmask(GPIO_INPUT_PIN_SEL); //Enable the GPIO interrupt
 }
+
 static void gpio_4_isr_handler(void *arg)
 {
     static uint32_t start_time = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
@@ -131,19 +171,57 @@ static void gpio_4_isr_handler(void *arg)
 
     if(gpio_get_level(GPIO_INPUT_IO_4) == 1)
     {
-        start_time = esp_get_time();
+        start_time = get_time_us();
     }else if(gpio_get_level(GPIO_INPUT_IO_4) == 0)
     {
-        end_time = esp_get_time();
-        Rc.RC_ch[4] = end_time - start_time;
-        Rc.recv_time = esp_get_time();
+        end_time = get_time_us();
+        if(end_time > start_time)
+        {
+            Rc.RC_ch[4] = end_time - start_time;
+        }
+        else if(end_time < start_time)
+        {
+            Rc.RC_ch[4] = end_time + (TIM_MAX_VAL - start_time);
+        }
+        Rc.recv_time = get_time_us();
     }
-
-  //      GPIO_REG_WRITE( GPIO_STATUS_W1TC_ADDRESS, GPIO_INPUT_PIN_SEL); //clear interrupt mask
-   //     _xt_isr_unmask(GPIO_INPUT_PIN_SEL); //Enable the GPIO interrupt
 }
 
 
+
+static void Task_Show_PwmIn(void *pvParameters) 
+{
+    uint32_t recv_lost_time = 0;
+    while(1)
+    {
+        if(get_time_us() > Rc.recv_time)
+        {
+            recv_lost_time = get_time_us() - Rc.recv_time;
+        }
+        else if(get_time_us() < Rc.recv_time)
+        {
+            recv_lost_time = get_time_us() + (TIM_MAX_VAL - Rc.recv_time);
+        }
+
+
+        if(recv_lost_time > 2000000)
+        {
+            ESP_LOGI(TAG, "RC_PPM lost 2s!!!!!!!!!!!!");
+            Rc.ppm_lost = 1;
+            memset(Rc.RC_ch,1500,10);
+        }
+        else
+        {
+            ESP_LOGI(TAG, "RC_ch= %d,%d,%d,%d,%d,%d,%d,%d,%d%d",Rc.RC_ch[0],Rc.RC_ch[1],Rc.RC_ch[2],Rc.RC_ch[3],Rc.RC_ch[4],Rc.RC_ch[5],Rc.RC_ch[6],Rc.RC_ch[7],Rc.RC_ch[8],Rc.RC_ch[9]);
+        }
+        vTaskDelay(200/portTICK_RATE_MS);
+    }
+}
+
+static void hw_timer_callback1(void *arg)
+{
+    hw_time_count++;
+}
 
 static void GpioInputeConfig(void)
 {
@@ -172,26 +250,12 @@ static void GpioInputeConfig(void)
     gpio_isr_handler_add(GPIO_INPUT_IO_4, gpio_4_isr_handler, (void *) GPIO_INPUT_IO_4);
 }
 
-static void Task_Show_PwmIn(void *pvParameters) 
-{
-    while(1)
-    {
-        if(esp_get_time() - Rc.recv_time > 2000000)
-        {
-            ESP_LOGI(TAG, "RC_PPM lost 2s!!!!!!!!!!!!");
-            Rc.ppm_lost = 1;
-            memset(Rc.RC_ch,1500,10);
-        }
-        else
-        {
-            ESP_LOGI(TAG, "RC_ch= %d,%d,%d,%d,%d,%d,%d,%d,%d%d",Rc.RC_ch[0],Rc.RC_ch[1],Rc.RC_ch[2],Rc.RC_ch[3],Rc.RC_ch[4],Rc.RC_ch[5],Rc.RC_ch[6],Rc.RC_ch[7],Rc.RC_ch[8],Rc.RC_ch[9]);
-        }
-        vTaskDelay(200/portTICK_RATE_MS);
-    }
-}
-
 void RcIn_Init()
 {
+    hw_timer_init(hw_timer_callback1, NULL);
+    ESP_LOGI(TAG, "Set hw_timer timing time 1000000us with reload");
+    hw_timer_alarm_us(1000000, true);
+
     GpioInputeConfig();
     xTaskCreate(Task_Show_PwmIn, "Task_Show_PwmIn", 1024, NULL, 5, NULL);
 }
