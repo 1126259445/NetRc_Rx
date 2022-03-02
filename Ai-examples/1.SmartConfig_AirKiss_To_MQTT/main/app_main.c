@@ -91,7 +91,7 @@ int sock_fd;
 #define DEVICE_TYPE "ESP_NetRc_Tx"
 
 //mqtt
-esp_mqtt_client_handle_t client;
+esp_mqtt_client_handle_t client = NULL;
 
 //是否连接服务器
 bool isConnect2Server = false;
@@ -184,6 +184,10 @@ void TaskXMqttRecieve(void *p)
 		.disable_clean_session = false,		//开启 清除会话
 		.buffer_size = 1024*5,
 	};
+	if(client != NULL)
+	{
+		esp_mqtt_client_destroy(client);
+	}
 	client = esp_mqtt_client_init(&mqtt_cfg);
 	esp_mqtt_client_start(client);
 
