@@ -212,7 +212,7 @@ static uint8_t json_parse(User_data *pMqttMsg)
 		return 0;
 	}
 
-	printf( "\nbuf_LEN: %d\n", pMqttMsg->dataLen);
+//	printf( "\nbuf_LEN: %d\n", pMqttMsg->dataLen);
     
     if (root)
     {
@@ -224,8 +224,8 @@ static uint8_t json_parse(User_data *pMqttMsg)
             msg_id = cJSON_GetObjectItem(head_item, "msg_id")->valueint;
             msg_no = cJSON_GetObjectItem(head_item, "msg_no")->valueint;
             timestamp = cJSON_GetObjectItem(head_item, "timestamp")->valuedouble;
-            printf( "msg_id: %d\n", msg_id);
-            printf( "msg_no: %d\n", msg_no);
+//            printf( "msg_id: %d\n", msg_id);
+//            printf( "msg_no: %d\n", msg_no);
 			
             switch (msg_id)
             {
@@ -267,10 +267,11 @@ static uint8_t json_parse(User_data *pMqttMsg)
 						mqtt_cmd.Variable_Val[1] = 1000+mqtt_cmd.Variable_Val[1]*4;
 								mqtt_cmd.Variable_Val[2] = 1000+mqtt_cmd.Variable_Val[2]*4;
 				*/
-					printf("Switch: %d\n 0: %d\n 1: %d\n 2: %d\n 3: %d\n 4: %d\n 5: %d\n 6: %d\n 7: %d\n", \
+					printf("Switch: %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\n", \
 					mqtt_cmd.Switch,mqtt_cmd.Variable_Val[0],mqtt_cmd.Variable_Val[1],mqtt_cmd.Variable_Val[2], \
 					mqtt_cmd.Variable_Val[3],mqtt_cmd.Variable_Val[4],mqtt_cmd.Variable_Val[5], \
 					mqtt_cmd.Variable_Val[6],mqtt_cmd.Variable_Val[7]);
+
 					Json_Recv_Cmd_Process(&mqtt_cmd);
 				}
 				break;

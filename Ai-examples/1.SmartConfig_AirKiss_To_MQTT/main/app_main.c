@@ -154,7 +154,7 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 
 			isRecvFlinis = true;
 			
-			ESP_LOGI(TAG, "isRecvFlinis == true");
+//			ESP_LOGI(TAG, "isRecvFlinis == true");
 		}
 		break;
 	}
