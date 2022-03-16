@@ -34,6 +34,42 @@ User_HttpSeverInfo_t User_HttpSeverInfo;
 
 static wifi_config_t Wifi_info;
 
+//char home_html[512] = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>ESP8266</title></head><body><div id=\"login\"><h1>ESP8266设置</h1><form name=\"my\"> WiFi名称： <input type=\"text\" name=\"ssid\" placeholder=\"请输入您WiFi的名称\"><br> WiFi密码： <input type=\"text\" name=\"password\" placeholder=\"请输入您WiFi的密码\"><input type=\"submit\" value=\"连接\"><br><br> 订阅ID： <input type=\"text\" name=\"subid\" placeholder=\"请输入发射端的ID\"><input type=\"submit\" value=\"设置\"></form></body></html>";
+char home_html[1500] = {" \
+<!DOCTYPE html> \
+<html lang=\"en\"> \
+<head>  \
+	<meta charset=\"UTF-8\">  \
+	<title>ESP8266</title>  \
+		\
+</head> \
+	<body> \
+    	<div id=\"login\">  \
+        	<h1>ESP8266设置</h1> \
+		<form action=\"wifi_set\"> \
+			WiFi名称： \
+			<input type=\"text\" name=\"ssid\" placeholder=\"请输入您WiFi的名称\"> \
+		    <br> \
+			WiFi密码： \
+			<input type=\"text\" name=\"password\" placeholder=\"请输入您WiFi的密码\"> \
+			<input type=\"submit\" value=\"连接\"> \
+			<br><br> \
+			订阅ID： \
+			<input type=\"text\" name=\"subid\" placeholder=\"请输入发射端的ID\">  \
+			<input type=\"submit\" value=\"设置\"> \
+		</form> \
+            <br><br> \
+		<form action=\"safe_ch_set\"> \
+  		失控保护: 通道1<input type=\"number\" name=\"safe_ch1\" min=\"900\" max=\"2000\"> \
+			    通道2<input type=\"number\" name=\"safe_ch2\" min=\"900\" max=\"2000\"> \
+			    通道3<input type=\"number\" name=\"safe_ch3\" min=\"900\" max=\"2000\">	\
+                通道4<input type=\"number\" name=\"safe_ch4\" min=\"900\" max=\"2000\"> \
+			    通道5<input type=\"number\" name=\"safe_ch5\" min=\"900\" max=\"2000\"> \
+  		<input type=\"submit\" value=\"设置\"> \
+		</form> \
+	</body> \
+</html> \
+"} ;
 
 /**
  * @description: 
@@ -81,8 +117,8 @@ void NetRc_save_info(char *Device_Mac)
 }
 
 
-/* An HTTP GET handler */
-esp_err_t home_get_handler(httpd_req_t *req)
+
+esp_err_t safe_get_handler(httpd_req_t *req)
 {
     char*  buf;
     size_t buf_len;
@@ -93,7 +129,88 @@ esp_err_t home_get_handler(httpd_req_t *req)
     if (buf_len > 1) {
         buf = malloc(buf_len);
         if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
-            ESP_LOGI(TAG, "hello Found URL query => %s", buf);
+            ESP_LOGI(TAG, "safe Found URL query => %s", buf);
+
+            uint16_t safe_ch[5] = {0};
+            /* Get value of expected key from query string */
+             if (httpd_query_key_value(buf, "safe_ch1", (char *)&safe_ch[0], 2) == ESP_OK)
+             {  
+                  if(safe_ch[0] != 0)
+                  {
+                        ESP_LOGI(TAG, "safe_ch1 = %d", safe_ch[0]);
+                  }
+                  else
+                  {
+                      ESP_LOGI(TAG, "safe_ch is NULL");
+                  }         
+             }
+
+             if (httpd_query_key_value(buf, "safe_ch2", (char*)&safe_ch[1], 2) == ESP_OK)
+             {  
+                  if(safe_ch[1] != 0)
+                  {
+                        ESP_LOGI(TAG, "safe_ch2 = %d", safe_ch[1]);
+                  }
+                  else
+                  {
+                      ESP_LOGI(TAG, "safe_ch is NULL");
+                  }         
+             }
+
+           if (httpd_query_key_value(buf, "safe_ch3", (char*)&safe_ch[2], 2) == ESP_OK)
+             {  
+                  if(safe_ch[2] != 0)
+                  {
+                        ESP_LOGI(TAG, "safe_ch3 = %d", safe_ch[2]);
+                  }
+                  else
+                  {
+                      ESP_LOGI(TAG, "safe_ch is NULL");
+                  }         
+             }
+
+             if (httpd_query_key_value(buf, "safe_ch4", (char*)&safe_ch[3], 2) == ESP_OK)
+             {  
+                  if(safe_ch[3] != 0)
+                  {
+                        ESP_LOGI(TAG, "safe_ch4 = %d", safe_ch[3]);
+                  }
+                  else
+                  {
+                      ESP_LOGI(TAG, "safe_ch is NULL");
+                  }         
+             }
+
+            if (httpd_query_key_value(buf, "safe_ch5", (char*)&safe_ch[4], 2) == ESP_OK)
+             {  
+                  if(safe_ch[4] != 0)
+                  {
+                    ESP_LOGI(TAG, "safe_ch5 = %d", safe_ch[4]);
+                  }
+                  else
+                  {
+                      ESP_LOGI(TAG, "safe_ch is NULL");
+                  }         
+             }           
+            
+        }
+         free(buf);
+    }
+    return ESP_OK;
+}
+
+esp_err_t wifi_get_handler(httpd_req_t *req)
+{
+    char*  buf;
+    size_t buf_len;
+
+    /* Read URL query string length and allocate memory for length + 1,
+     * extra byte for null termination */
+    buf_len = httpd_req_get_url_query_len(req) + 1;
+    if (buf_len > 1) {
+        buf = malloc(buf_len);
+        if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
+            ESP_LOGI(TAG, "wifi Found URL query => %s", buf);
             char ssid[32] = {0};
             char password[32] = {0};
             char subid[32] = {0};
@@ -128,7 +245,12 @@ esp_err_t home_get_handler(httpd_req_t *req)
         }
         free(buf);
     }
+    return ESP_OK;
+}
 
+/* An HTTP GET handler */
+esp_err_t home_get_handler(httpd_req_t *req)
+{
     /* Send response with custom headers and body set as the
      * string passed in user context*/
     const char* resp_str = (const char*) req->user_ctx;
@@ -142,13 +264,31 @@ esp_err_t home_get_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+httpd_uri_t safe = {
+    .uri       = "/safe_ch_set",
+    .method    = HTTP_GET,
+    .handler   = safe_get_handler,
+    /* Let's pass response string in user
+     * context to demonstrate it's usage */
+//    .user_ctx  = home_html
+};
+
+httpd_uri_t wifi = {
+    .uri       = "/wifi_set",
+    .method    = HTTP_GET,
+    .handler   = wifi_get_handler,
+    /* Let's pass response string in user
+     * context to demonstrate it's usage */
+//    .user_ctx  = home_html
+};
+
 httpd_uri_t home = {
     .uri       = "/",
     .method    = HTTP_GET,
     .handler   = home_get_handler,
     /* Let's pass response string in user
      * context to demonstrate it's usage */
-    .user_ctx  = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>ESP8266</title></head><body><div id=\"login\"><h1>ESP8266设置</h1><form name=\"my\"> WiFi名称： <input type=\"text\" name=\"ssid\" placeholder=\"请输入您WiFi的名称\"><br> WiFi密码： <input type=\"text\" name=\"password\" placeholder=\"请输入您WiFi的密码\"><input type=\"submit\" value=\"连接\"><br><br> 订阅ID： <input type=\"text\" name=\"subid\" placeholder=\"请输入发射端的ID\"><input type=\"submit\" value=\"设置\"></form></body></html>"
+    .user_ctx  = home_html
 };
 
 
@@ -163,6 +303,8 @@ httpd_handle_t start_webserver(void)
         // Set URI handlers
         ESP_LOGI(TAG, "Registering URI handlers");
         httpd_register_uri_handler(server, &home);
+        httpd_register_uri_handler(server, &wifi);
+        httpd_register_uri_handler(server, &safe);
         return server;
     }
 
@@ -196,7 +338,7 @@ void HttpSever_Init()
 {
     nvs_handle out_handle;
         //从本地存储读取是否存在ssid和password
-    if (nvs_open("wifi_info", NVS_READONLY, &out_handle) == ESP_OK)
+    if (nvs_open("DeviceInfo", NVS_READONLY, &out_handle) == ESP_OK)
     {    
         uint8_t size = 32;
         if (nvs_get_str(out_handle, "ssid", (char *)User_HttpSeverInfo.ssid, &size) == ESP_OK)
@@ -206,7 +348,10 @@ void HttpSever_Init()
                ESP_LOGI(TAG, "wifi_info is have Wifi info %s %s ",User_HttpSeverInfo.ssid,User_HttpSeverInfo.password);
             }
         }
+        if (nvs_get_str(out_handle, "Device_Mac", (char *)User_HttpSeverInfo.devid, &size) == ESP_OK)
+        {
+             ESP_LOGI(TAG, "wifi_info is have Device_Mac  %s ",User_HttpSeverInfo.devid);
+        }       
     }
-
     server = start_webserver();
 }
