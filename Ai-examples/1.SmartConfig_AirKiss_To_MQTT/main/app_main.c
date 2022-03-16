@@ -122,7 +122,7 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 		//data_up_task
 		//xTaskCreate(Task_CreatJSON, "Task_CreatJSON", 1024*5, NULL, 6, NULL);
 		//开启json解析线程
-		xTaskCreate(Task_ParseJSON, "Task_ParseJSON", 1024*3, NULL, 5, NULL);
+		//xTaskCreate(Task_ParseJSON, "Task_ParseJSON", 1024*3, NULL, 5, NULL);
 
 		isConnect2Server = true;
 		break;
@@ -641,7 +641,7 @@ void app_main(void)
 	//OLED_I2C_Init();
 	xTaskCreate(TaskButton, "TaskButton", 1024, NULL, 6, NULL);
 	//xTaskCreate(Task_Sensor, "Task_Sensor", 1024, NULL, 6, NULL);
-	
+	xTaskCreate(Task_ParseJSON, "Task_ParseJSON", 1024*3, NULL, 5, NULL);
 	
 	tcpip_adapter_init();
 	wifi_event_group = xEventGroupCreate();
