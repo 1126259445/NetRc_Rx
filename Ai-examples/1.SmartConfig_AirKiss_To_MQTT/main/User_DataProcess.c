@@ -205,7 +205,7 @@ void joson_create_uav_data_send()
 //	    strcat(publish_topic,"_UP");
 
         /*publish JSON data to server*/
-        mqtt_publish_data_interface(MqttTopicPub, pub_payload,0,0);
+        mqtt_publish_data_interface(MqttTopicPub, pub_payload,0,1);
 
 		if(pub_payload!=NULL)
 		{
@@ -342,21 +342,26 @@ void Task_CreatJSON(void *pvParameters)
 {
 	while(1)
 	{
-		//post_data_to_clouds();
 		if (isConnect2Server)
 		{
 			if(Rc.ppm_lost == 0)
 			{
 				joson_create_uav_data_send();
-				 Led_SetState(OFF);
+				Led_SetState(OFF);
 			}
 			else
 			{
 				Led_SetState(ONE_HZ);
-			}
-			
+			}		
 		}
-
+		else
+		{
+			if(Led_GetState() != FIVE_HZ)
+			{
+				Led_SetState(ON);
+			}
+		}
+		
 		vTaskDelay(50/portTICK_RATE_MS);
 	}
 }
