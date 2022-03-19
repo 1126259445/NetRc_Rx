@@ -180,7 +180,7 @@ void TaskXMqttRecieve(void *p)
 		.client_id = deviceUUID,
 		.event_handle = MqttCloudsCallBack, //设置回调函数
 		.keepalive = 120,					//心跳
-		.disable_auto_reconnect = true,	//开启自动重连
+		.disable_auto_reconnect = false,	//开启自动重连
 		.disable_clean_session = false,		//开启 清除会话
 		.buffer_size = 1024*5,
 	};
