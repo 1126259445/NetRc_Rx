@@ -319,7 +319,10 @@ void Task_ParseJSON(void *pvParameters)
 		}
 		else
 		{
-			Led_SetState(ONE_HZ);
+			if(Led_GetState() != FIVE_HZ)
+			{
+				Led_SetState(ONE_HZ);
+			}
 			ESP_LOGI(TAG, "Net Rc_Tx Data Lost!!!!!!!!!!!!!!");
 			Set_Pwm_All_Chinel_Val(8,duties);
 			vTaskDelay(500/portTICK_RATE_MS);
