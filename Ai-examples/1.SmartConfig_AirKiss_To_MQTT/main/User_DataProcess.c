@@ -205,7 +205,7 @@ void joson_create_uav_data_send()
 //	    strcat(publish_topic,"_UP");
 
         /*publish JSON data to server*/
-        mqtt_publish_data_interface(MqttTopicPub, pub_payload,0,1);
+        mqtt_publish_data_interface(MqttTopicPub, pub_payload,0,0);
 
 		if(pub_payload!=NULL)
 		{
