@@ -321,9 +321,9 @@ void Task_ParseJSON(void *pvParameters)
 		{
 			if(Led_GetState() != FIVE_HZ)
 			{
-				Led_SetState(ONE_HZ);
+				Led_SetState(ON);
 			}
-			ESP_LOGI(TAG, "Net Rc_Tx Data Lost!!!!!!!!!!!!!!");
+			ESP_LOGI(TAG, "isConnect2Server Lost!!!!!!!!!!!!!!");
 			Set_Pwm_All_Chinel_Val(8,duties);
 			vTaskDelay(500/portTICK_RATE_MS);
 		}
