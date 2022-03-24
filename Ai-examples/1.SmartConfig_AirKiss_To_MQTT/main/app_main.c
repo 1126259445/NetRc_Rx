@@ -147,9 +147,10 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 	case MQTT_EVENT_DATA:
 	{
 		//ESP_LOGI(TAG, " xQueueReceive  data [%s] \n", event->data);
-		if(event->data_len < 1024)
+		if(event->data_len <= 2048)
 		{
-			sprintf(user_data.allData, "%s", event->data);
+			memset(user_data.allData,0,sizeof(user_data.allData));
+			memcpy(user_data.allData, event->data,event->data_len);
 			user_data.dataLen = event->data_len;
 
 			isRecvFlinis = true;
@@ -182,7 +183,7 @@ void TaskXMqttRecieve(void *p)
 		.keepalive = 120,					//心跳
 		.disable_auto_reconnect = false,	//开启自动重连
 		.disable_clean_session = false,		//开启 清除会话
-		.buffer_size = 1024,
+		.buffer_size = 2048,
 	};
 	
 	if(client != NULL)
