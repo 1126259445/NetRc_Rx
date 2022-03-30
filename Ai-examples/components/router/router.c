@@ -73,11 +73,10 @@ void router_wifi_save_info(uint8_t *ssid, uint8_t *password)
  */
 bool routerStartConnect()
 {
-
     size_t size = 0;
     nvs_handle out_handle;
     bool isGetSSID = false;
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
 
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
