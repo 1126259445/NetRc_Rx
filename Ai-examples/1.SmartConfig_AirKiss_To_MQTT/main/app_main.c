@@ -98,8 +98,6 @@ bool isConnect2Server = false;
 
 bool isRecvFlinis = false;
 
-char udp_msg[512]; //固定的本地广播数据
-
 /* 
  * @Description: MQTT服务器的下发消息回调
  * @param: 
@@ -320,7 +318,6 @@ static void TaskRestartSystem(void *p)
 */
 bool startAirkissTask()
 {
-
 	ESP_LOGI(TAG, "startAirkissTask");
 	int ret = pdFAIL;
 	if (handleLlocalFind == NULL)
@@ -343,35 +340,20 @@ bool startAirkissTask()
  * @param: 
  * @return: 
 */
-size_t size = 0;
-nvs_handle out_handle;
+
 static esp_err_t event_handler(void *ctx, system_event_t *event)
 {
+	nvs_handle out_handle;
+
 	switch (event->event_id)
 	{
 	case SYSTEM_EVENT_AP_START:
-		Led_SetState(ON);
-		HttpSever_Init();
 		break;
 
 	case SYSTEM_EVENT_STA_START:
 		Led_SetState(ON);
 		//从本地存储读取是否存在ssid和password
-		if (nvs_open("wifi_info", NVS_READONLY, &out_handle) == ESP_OK)
-		{
-			wifi_config_t config;
-			memset(&config, 0x0, sizeof(config));
-			size = sizeof(config.sta.ssid);
-			if (nvs_get_str(out_handle, "ssid", (char *)config.sta.ssid, &size) == ESP_OK)
-			{
-				if (nvs_get_str(out_handle, "password", (char *)config.sta.password, &size) == ESP_OK)
-				{
-					routerStartConnect();
-				}
-			}
-		}
-
-		//xTaskCreate(TaskSmartConfigAirKiss2Net, "TaskSmartConfigAirKiss2Net", 1024 * 2, NULL, 3, NULL);
+		routerStartConnect();
 		break;
 	case SYSTEM_EVENT_STA_GOT_IP:
 	{
@@ -463,7 +445,7 @@ void TaskSmartConfigAirKiss2Net(void *parm)
 {
 	EventBits_t uxBits;
 	//判别是否自动连接
-	bool isAutoConnect = routerStartConnect();
+/*	bool isAutoConnect = routerStartConnect();
 	//是的，则不进去配网模式，已连接路由器
 	if (isAutoConnect)
 	{
@@ -472,7 +454,7 @@ void TaskSmartConfigAirKiss2Net(void *parm)
 	}
 	//否，进去配网模式
 	else
-	{
+*/	{
 		ESP_LOGI(TAG, "into smartconfig mode");
 		ESP_ERROR_CHECK(esp_smartconfig_set_type(SC_TYPE_ESPTOUCH_AIRKISS));
 		ESP_ERROR_CHECK(esp_smartconfig_start(sc_callback));
@@ -517,14 +499,15 @@ static void ButtonLongPressCallBack(void *arg)
 {
 	ESP_LOGI(TAG, "ButtonLongPressCallBack  esp_get_free_heap_size(): %d ", esp_get_free_heap_size());
 	//重启并进去配网模式
-	//重启并进去配网模式
 	esp_wifi_disconnect();
-	router_wifi_clean_info();
-	//Set_STA();
-	vTaskDelay(100 / portTICK_RATE_MS);
-	xTaskCreate(TaskSmartConfigAirKiss2Net, "TaskSmartConfigAirKiss2Net", 1024 * 2, NULL, 3, NULL);
+//	router_wifi_clean_info();
+	
+	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-	//xTaskCreate(TaskRestartSystem, "TaskRestartSystem", 1024, NULL, 6, NULL);
+	vTaskDelay(100 / portTICK_RATE_MS);
+	xTaskCreate(TaskSmartConfigAirKiss2Net, "TaskSmartConfigAirKiss2Net", 1024 * 4, NULL, 3, NULL);
 }
 
 /**
@@ -547,7 +530,24 @@ void TaskButton(void *pvParameters)
 	vTaskDelete(NULL);
 }
 
-
+/* 
+ * @Description: wifi_ApConfig_Init
+ * @param: 
+ * @return: 
+*/
+static void wifi_ApConfig_Init()
+{
+	wifi_config_t wifi_config = {
+        .ap = {
+            .ssid = "NetRc_Tx",
+            .ssid_len = strlen("NetRc_Tx"),
+            .password = "123456",
+            .max_connection = 4,
+            .authmode = WIFI_AUTH_OPEN},
+    };
+	ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
+    ESP_LOGI(TAG, "wifi_init_softap finished.SSID:%s password:%s",wifi_config.ap.ssid,wifi_config.ap.password);
+}
 
 /******************************************************************************
  * FunctionName : app_main
@@ -606,19 +606,10 @@ void app_main(void)
 	ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL));
 
 	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-
 	ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
 	ESP_ERROR_CHECK(esp_wifi_start());
 
-	wifi_config_t wifi_config = {
-        .ap = {
-            .ssid = "ESP8266",
-            .ssid_len = strlen("ESP8266"),
-            .password = "123456",
-            .max_connection = 4,
-            .authmode = WIFI_AUTH_OPEN},
-    };
-	ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
-    ESP_LOGI(TAG, "wifi_init_softap finished.SSID:%s password:%s",wifi_config.ap.ssid,wifi_config.ap.password);
+	wifi_ApConfig_Init();
+	HttpSever_Init();
 }
