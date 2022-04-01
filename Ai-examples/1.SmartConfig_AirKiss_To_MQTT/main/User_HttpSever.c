@@ -19,22 +19,16 @@
 #include "router.h"
 
 #include <esp_http_server.h>
+#include "User_NvsData.h"
 
 static const char *TAG="USER_HTTP_Sever";
 
 
-typedef struct 
-{
-    uint8_t ssid[32];
-    uint8_t password[64];
-    uint8_t devid[32];
-}User_HttpSeverInfo_t;
-User_HttpSeverInfo_t User_HttpSeverInfo;
 
 
 static wifi_config_t Wifi_info;
 
-//char home_html[512] = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>ESP8266</title></head><body><div id=\"login\"><h1>ESP8266设置</h1><form name=\"my\"> WiFi名称： <input type=\"text\" name=\"ssid\" placeholder=\"请输入您WiFi的名称\"><br> WiFi密码： <input type=\"text\" name=\"password\" placeholder=\"请输入您WiFi的密码\"><input type=\"submit\" value=\"连接\"><br><br> 订阅ID： <input type=\"text\" name=\"subid\" placeholder=\"请输入发射端的ID\"><input type=\"submit\" value=\"设置\"></form></body></html>";
+
 char home_html[1500] = {" \
 <!DOCTYPE html> \
 <html lang=\"en\"> \
@@ -77,50 +71,6 @@ char home_html[1500] = {" \
 </html> \
 "} ;
 
-/**
- * @description: 
- * @param {type} 
- * @return: 
- */
-int NetRc_Read_info(uint8_t *data)
-{
-    nvs_handle out_handle;
-        //从本地存储读取是否存在ssid和password
-    if (nvs_open("DeviceInfo", NVS_READONLY, &out_handle) == ESP_OK)
-    {    
-        uint8_t size = 32;
-        if (nvs_get_str(out_handle, "Device_Mac", (char *)data, &size) == ESP_OK)
-        {
-            ESP_LOGI(TAG, "Device_Mac = %s ",data);
-            return 1;
-        }
-    }
-
-    return 0;
-}
-/**
- * @description: 
- * @param {type} 
- * @return: 
- */
-void NetRc_save_info(char *Device_Mac)
-{
-    nvs_handle out_handle_Device;
-    char data[32];
-    if (nvs_open("DeviceInfo", NVS_READWRITE, &out_handle_Device) != ESP_OK)
-    {
-        return;
-    }
-
-    memset(data, 0x0, sizeof(data));
-    strncpy(data, Device_Mac, strlen(Device_Mac));
-    if (nvs_set_str(out_handle_Device, "Device_Mac", data) != ESP_OK)
-    {
-        printf("--set Device_Mac fail");
-    }
-
-    nvs_close(out_handle_Device);
-}
 
 
 
@@ -144,68 +94,78 @@ esp_err_t safe_get_handler(httpd_req_t *req)
         if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
             ESP_LOGI(TAG, "safe Found URL query => %s", buf);
 
-            uint16_t safe_ch[5] = {0};
+            char safe_ch[10] = {0};
             /* Get value of expected key from query string */
-             if (httpd_query_key_value(buf, "safe_ch1", (char *)&safe_ch[0], 2) == ESP_OK)
+             if (httpd_query_key_value(buf, "safe_ch1", safe_ch, 9) == ESP_OK)
              {  
-                  if(safe_ch[0] != 0)
+                  if(strlen(safe_ch) != 0)
                   {
-                        ESP_LOGI(TAG, "safe_ch1 = %d", safe_ch[0]);
+                        User_HttpSeverInfo.safe_ch_val[0] = atoi(safe_ch);
+                        ESP_LOGI(TAG, "safe_ch1 = %s", safe_ch);
                   }
                   else
                   {
-                      ESP_LOGI(TAG, "safe_ch is NULL");
+                        ESP_LOGI(TAG, "safe_ch is NULL");
                   }         
              }
 
-             if (httpd_query_key_value(buf, "safe_ch2", (char*)&safe_ch[1], 2) == ESP_OK)
+                memset(safe_ch,0,10);
+              if (httpd_query_key_value(buf, "safe_ch2", safe_ch, 9) == ESP_OK)
              {  
-                  if(safe_ch[1] != 0)
+                  if(strlen(safe_ch) != 0)
                   {
-                        ESP_LOGI(TAG, "safe_ch2 = %d", safe_ch[1]);
+                        User_HttpSeverInfo.safe_ch_val[1] = atoi(safe_ch);
+                        ESP_LOGI(TAG, "safe_ch2 = %s", safe_ch);
                   }
                   else
                   {
-                      ESP_LOGI(TAG, "safe_ch is NULL");
+                        ESP_LOGI(TAG, "safe_ch is NULL");
                   }         
              }
 
-           if (httpd_query_key_value(buf, "safe_ch3", (char*)&safe_ch[2], 2) == ESP_OK)
+            memset(safe_ch,0,10);
+            if (httpd_query_key_value(buf, "safe_ch3", safe_ch, 9) == ESP_OK)
              {  
-                  if(safe_ch[2] != 0)
+                  if(strlen(safe_ch) != 0)
                   {
-                        ESP_LOGI(TAG, "safe_ch3 = %d", safe_ch[2]);
+                        User_HttpSeverInfo.safe_ch_val[2] = atoi(safe_ch);
+                        ESP_LOGI(TAG, "safe_ch3 = %s", safe_ch);
                   }
                   else
                   {
-                      ESP_LOGI(TAG, "safe_ch is NULL");
+                        ESP_LOGI(TAG, "safe_ch is NULL");
                   }         
              }
 
-             if (httpd_query_key_value(buf, "safe_ch4", (char*)&safe_ch[3], 2) == ESP_OK)
+             memset(safe_ch,0,10);
+             if (httpd_query_key_value(buf, "safe_ch4", safe_ch, 9) == ESP_OK)
              {  
-                  if(safe_ch[3] != 0)
+                  if(strlen(safe_ch) != 0)
                   {
-                        ESP_LOGI(TAG, "safe_ch4 = %d", safe_ch[3]);
+                        User_HttpSeverInfo.safe_ch_val[3] = atoi(safe_ch);
+                        ESP_LOGI(TAG, "safe_ch4 = %s", safe_ch);
                   }
                   else
                   {
-                      ESP_LOGI(TAG, "safe_ch is NULL");
+                        ESP_LOGI(TAG, "safe_ch is NULL");
                   }         
              }
 
-            if (httpd_query_key_value(buf, "safe_ch5", (char*)&safe_ch[4], 2) == ESP_OK)
+             memset(safe_ch,0,10);
+             if (httpd_query_key_value(buf, "safe_ch5", safe_ch, 9) == ESP_OK)
              {  
-                  if(safe_ch[4] != 0)
+                  if(strlen(safe_ch) != 0)
                   {
-                    ESP_LOGI(TAG, "safe_ch5 = %d", safe_ch[4]);
+                        User_HttpSeverInfo.safe_ch_val[4] = atoi(safe_ch);
+                        ESP_LOGI(TAG, "safe_ch5 = %s", safe_ch);
                   }
                   else
                   {
-                      ESP_LOGI(TAG, "safe_ch is NULL");
+                        ESP_LOGI(TAG, "safe_ch is NULL");
                   }         
-             }           
-            
+             }
+            ESP_LOGI(TAG, "safe_ch = %d %d  %d  %d  %d", User_HttpSeverInfo.safe_ch_val[0],User_HttpSeverInfo.safe_ch_val[1],User_HttpSeverInfo.safe_ch_val[2],User_HttpSeverInfo.safe_ch_val[3],User_HttpSeverInfo.safe_ch_val[4]);
+            NetRc_save_info(&User_HttpSeverInfo); //save all user info
         }
          free(buf);
     }
@@ -235,6 +195,9 @@ esp_err_t wifi_get_handler(httpd_req_t *req)
                     router_wifi_save_info((uint8_t*)ssid,(uint8_t*)password);
                     ESP_LOGI(TAG, "HOME Found URL query parameter => ssid=%s", ssid);
                     ESP_LOGI(TAG, "HOME Found URL query parameter => password=%s", password);
+                    memcpy(User_HttpSeverInfo.ssid,ssid,strlen(ssid));
+                    memcpy(User_HttpSeverInfo.password,password,strlen(password));
+                    
                 }
                 else
                 {
@@ -246,15 +209,16 @@ esp_err_t wifi_get_handler(httpd_req_t *req)
              {  
                   if(strlen(subid) != 0)
                   {
-                    NetRc_save_info(subid);
                     ESP_LOGI(TAG, "HOME Found URL query parameter => subid=%s", subid);
+                    memcpy(User_HttpSeverInfo.subid,subid,strlen(subid));
                   }
                   else
                   {
                       ESP_LOGI(TAG, "Mac is NULL");
                   }         
              }
-            
+
+            NetRc_save_info(&User_HttpSeverInfo); //save all user info
         }
         free(buf);
     }
@@ -360,21 +324,8 @@ static void disconnect_handler(void* arg, esp_event_base_t event_base,
 void HttpSever_Init()
 {
     nvs_handle out_handle;
-        //从本地存储读取是否存在ssid和password
-    if (nvs_open("DeviceInfo", NVS_READONLY, &out_handle) == ESP_OK)
-    {    
-        uint8_t size = 32;
-        if (nvs_get_str(out_handle, "ssid", (char *)User_HttpSeverInfo.ssid, &size) == ESP_OK)
-        {
-            if (nvs_get_str(out_handle, "password", (char *)User_HttpSeverInfo.password, &size) == ESP_OK)
-            {
-               ESP_LOGI(TAG, "wifi_info is have Wifi info %s %s ",User_HttpSeverInfo.ssid,User_HttpSeverInfo.password);
-            }
-        }
-        if (nvs_get_str(out_handle, "Device_Mac", (char *)User_HttpSeverInfo.devid, &size) == ESP_OK)
-        {
-             ESP_LOGI(TAG, "wifi_info is have Device_Mac  %s ",User_HttpSeverInfo.devid);
-        }       
-    }
+    
+    NetRc_Read_info(&User_HttpSeverInfo);
+
     server = start_webserver();
 }

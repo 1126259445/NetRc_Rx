@@ -45,6 +45,7 @@
 #include "User_HttpRequest_Weather.h"
 #include "User_HttpRequest_Time.h"
 #include "User_DataProcess.h"
+#include "User_NvsData.h"
 #include "User_Sensor.h"
 #include "Dev_Oled_I2c.h"
 #include "Dev_Pwm.h"
@@ -624,15 +625,9 @@ void app_main(void)
 	sprintf(deviceUUID, "%02x%02x%02x%02x%02x%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 	sprintf((char *)deviceInfo, "{\"type\":\"%s\",\"mac\":\"%s\"}", DEVICE_TYPE, deviceUUID);
 	
-	uint8_t TxMac[32] = {0};
-	if(NetRc_Read_info(TxMac))
-	{
-		sprintf(MqttTopicSub, "%s/Down", TxMac);
-	}else
-	{
-			//组建MQTT订阅的主题
-		sprintf(MqttTopicSub, "%s/Down", TX_UUID);
-	}
+	NetRc_Read_info(&User_HttpSeverInfo);
+	sprintf(MqttTopicSub, "%s/Down", User_HttpSeverInfo.subid);
+
 	//组建MQTT推送的主题
 	sprintf(MqttTopicPub, "%s/Up", deviceUUID);
 
