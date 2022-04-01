@@ -98,6 +98,23 @@ bool isConnect2Server = false;
 
 bool isRecvFlinis = false;
 
+
+typedef enum {
+	IDLE,
+	SMARTCONFIG,
+	WORKLE
+}mod_enum_t;
+static mod_enum_t current_mod = IDLE;
+
+void CurrentMoe_Set(mod_enum_t mod)
+{
+	current_mod = mod;
+}
+mod_enum_t CurrentMod_Get()
+{
+	return current_mod;
+}
+
 /* 
  * @Description: MQTT服务器的下发消息回调
  * @param: 
@@ -450,10 +467,11 @@ void TaskSmartConfigAirKiss2Net(void *parm)
 	//否，进去配网模式
 	else
 */	{
-		Led_SetState(FIVE_HZ);
 		ESP_LOGI(TAG, "into smartconfig mode");
 		ESP_ERROR_CHECK(esp_smartconfig_set_type(SC_TYPE_ESPTOUCH_AIRKISS));
 		ESP_ERROR_CHECK(esp_smartconfig_start(sc_callback));
+		Led_SetState(FIVE_HZ);
+		CurrentMoe_Set(SMARTCONFIG);
 	}
 	//阻塞等待配网完成结果
 	while (1)
@@ -520,10 +538,13 @@ static void ButtonLongPressCallBack(void *arg)
 	static uint8_t flag = 1;
 
 	ESP_LOGI(TAG, "ButtonLongPressCallBack  esp_get_free_heap_size(): %d ", esp_get_free_heap_size());
+
+	if(CurrentMod_Get() == SMARTCONFIG)
+		return;
+
 	//重启并进去配网模式
 	esp_wifi_disconnect();
-//	router_wifi_clean_info();
-	
+
 	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
