@@ -58,6 +58,10 @@ void Set_Pwm_All_Chinel_Val(uint8_t ch_num,uint32_t *duty)
             {
                 pwm_set_duty(i, duty[i]);
             }
+            else
+            {
+                pwm_set_duty(i, duties[i]);
+            }
         }
     }
     pwm_start();

@@ -7,7 +7,7 @@ typedef struct
     uint8_t ssid[32];
     uint8_t password[64];
     uint8_t subid[32];
-    uint16_t safe_ch_val[10];
+    uint16_t safe_ch_val[8];
 }User_HttpSeverInfo_t;
 extern User_HttpSeverInfo_t User_HttpSeverInfo;
 

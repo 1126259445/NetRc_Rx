@@ -10,6 +10,7 @@
 #include "string.h"
 #include "xpwm.h"
 
+#include "User_NvsData.h"
 #include "User_DataProcess.h"
 #include "Dev_Dht11.h"
 #include "Dev_Pwm.h"
@@ -324,7 +325,7 @@ void Task_ParseJSON(void *pvParameters)
 				Led_SetState(ON);
 			}
 			ESP_LOGI(TAG, "isConnect2Server Lost!!!!!!!!!!!!!!");
-			Set_Pwm_All_Chinel_Val(8,duties);
+			Set_Pwm_All_Chinel_Val(8,User_HttpSeverInfo.safe_ch_val);
 			vTaskDelay(500/portTICK_RATE_MS);
 		}
 		
