@@ -37,9 +37,17 @@ char home_html[1500] = {" \
 	<title>ESP8266</title>  \
 		\
 </head> \
-	<body> \
-    	<div id=\"login\">  \
-        	<h1>ESP8266设置</h1> \
+<style> \
+#myHeader { \
+  background: lightblue; \
+ padding: 180px; \
+  color: black; \
+  text-align: center; \
+} \
+</style> \
+	<body>  \
+    	<div id=myHeader>  \
+        	<h1>NetRc设置</h1> \
 		<form action=\"wifi_set\"> \
 			WiFi名称： \
 			<input type=\"text\" name=\"ssid\" placeholder=\"请输入您WiFi的名称\"> \
