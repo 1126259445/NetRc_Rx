@@ -130,7 +130,7 @@ esp_err_t home_get_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-char homeindex[512] = {0};
+char homeindex[600] = {0};
 httpd_uri_t home = {
     .uri       = "/",
     .method    = HTTP_GET,
@@ -181,6 +181,11 @@ static void disconnect_handler(void* arg, esp_event_base_t event_base,
 extern char deviceUUID[17];
 void HttpSever_Init()
 {
-    sprintf(homeindex,"<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>ESP8266</title></head><body><div id=\"login\"><h1>ESP8266配网</h1><form name=\"my\">WiFi名称：<input type=\"text\"name=\"ssid\"placeholder=\"请输入您WiFi的名称\"><br>WiFi密码：<input type=\"text\"name=\"password\"placeholder=\"请输入您WiFi的密码\"><input type=\"submit\"value=\"连接\"><br><br>设备MAC：%s<br></form></body></html>",deviceUUID);
+    sprintf(homeindex,"<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF8\"> \
+    <title>NetRc</title></head><body><style>#myHeader {background: lightblue;padding: 280px;color: black;text-align: center;}</style> \
+    <div id=myHeader><h1>NetRc设置</h1><form name=\"my\">WiFi名称：<input type=\"text\"name=\"ssid\"placeholder=\"请输入您WiFi的名称\"> \
+    <br>WiFi密码：<input type=\"text\"name=\"password\"placeholder=\"请输入您WiFi的密码\"><input type=\"submit\"value=\"连接\"> \
+    <br><br>设备MAC：%s<br></form></body></html>",deviceUUID);
+
     server = start_webserver();
 }
