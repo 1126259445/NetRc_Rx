@@ -298,7 +298,7 @@ void Task_ParseJSON(void *pvParameters)
 	static uint32_t LastRecvTime = 0;
 	while (1)
 	{
-		if(isConnect2Server)
+		if(isWifiConnectd && isConnect2Server)
 		{
 			if(isRecvFlinis == true)
 			{

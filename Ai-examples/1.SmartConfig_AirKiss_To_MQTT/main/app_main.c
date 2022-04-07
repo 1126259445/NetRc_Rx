@@ -96,6 +96,7 @@ esp_mqtt_client_handle_t client = NULL;
 
 //是否连接服务器
 bool isConnect2Server = false;
+bool isWifiConnectd = false;
 
 bool isRecvFlinis = false;
 
@@ -188,6 +189,7 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 */
 void TaskXMqttRecieve(void *p)
 {
+	ESP_LOGI(TAG, "TaskXMqttRecieve creat");
 	//连接的配置参数
 	esp_mqtt_client_config_t mqtt_cfg = {
 		.host = "1.12.255.251", //连接的域名 ，请务必修改为您的
@@ -198,12 +200,13 @@ void TaskXMqttRecieve(void *p)
 		.event_handle = MqttCloudsCallBack, //设置回调函数
 		.keepalive = 120,					//心跳
 		.disable_auto_reconnect = false,	//开启自动重连
-		.disable_clean_session = false,		//开启 清除会话
+		.disable_clean_session = true,		//开启 清除会话
 		.buffer_size = 2048,
 	};
 	
 	if(client != NULL)
 	{
+		esp_mqtt_client_stop(client);
 		esp_mqtt_client_destroy(client);
 	}
 	client = esp_mqtt_client_init(&mqtt_cfg);
@@ -374,12 +377,12 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 		Led_SetState(ONE_HZ);
 		xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
 		int ret = pdFAIL;
-		if (handleMqtt == NULL)
-			ret = xTaskCreate(TaskXMqttRecieve, "TaskXMqttRecieve", 1024 * 4, NULL, 5, &handleMqtt);
+		ret = xTaskCreate(TaskXMqttRecieve, "TaskXMqttRecieve", 1024 * 4, NULL, 5, &handleMqtt);
 		if (ret != pdPASS)
 		{
 			printf("create TaskXMqttRecieve thread failed.\n");
 		}
+		isWifiConnectd = true;
 		break;
 
 	case SYSTEM_EVENT_STA_DISCONNECTED:
@@ -389,7 +392,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 		}
 		esp_wifi_connect();
 		xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
-		isConnect2Server = false;
+		isWifiConnectd = false;
 		break;
 	default:
 		break;
