@@ -12,6 +12,7 @@ extern char MqttTopicSub[30];
 extern char MqttTopicPub[30];
 
 extern bool isConnect2Server;
+extern bool isWifiConnectd;
 extern esp_mqtt_client_handle_t client;
 
 #endif

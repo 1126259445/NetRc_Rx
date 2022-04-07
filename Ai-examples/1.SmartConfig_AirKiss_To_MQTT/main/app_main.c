@@ -95,6 +95,7 @@ esp_mqtt_client_handle_t client = NULL;
 
 //是否连接服务器
 bool isConnect2Server = false;
+bool isWifiConnectd = false;
 
 bool isRecvFlinis = false;
 
@@ -129,16 +130,6 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 		//连接成功
 	case MQTT_EVENT_CONNECTED:
 		ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-		//msg_id = esp_mqtt_client_subscribe(client, MqttTopicSub, 1);
-
-		//ESP_LOGI(TAG, "sent subscribe[%s] successful, msg_id=%d", MqttTopicSub, msg_id);
-		ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
-		//post_data_to_clouds();
-		//data_up_task
-		//xTaskCreate(Task_CreatJSON, "Task_CreatJSON", 1024*5, NULL, 6, NULL);
-		//开启json解析线程
-		//xTaskCreate(Task_ParseJSON, "Task_ParseJSON", 1024*3, NULL, 5, NULL);
-
 		isConnect2Server = true;
 		break;
 		//断开连接回调
@@ -160,25 +151,13 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 		break;
 		//服务器下发消息到本地成功接收回调
 	case MQTT_EVENT_DATA:
-	{
-		//ESP_LOGI(TAG, " xQueueReceive  data [%s] \n", event->data);
-		if(event->data_len < 1024)
-		{
-			sprintf(user_data.allData, "%s", event->data);
-			user_data.dataLen = event->data_len;
-
-			isRecvFlinis = true;
-			
-			ESP_LOGI(TAG, "isRecvFlinis == true");
-		}
 		break;
-	}
+	
 	default:
 		break;
 	}
 	return ESP_OK;
 }
-
 /* 
  * @Description: MQTT参数连接的配置
  * @param: 
@@ -186,6 +165,8 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 */
 void TaskXMqttRecieve(void *p)
 {
+	ESP_LOGI(TAG, "TaskXMqttRecieve Create");
+
 	//连接的配置参数
 	esp_mqtt_client_config_t mqtt_cfg = {
 		.host = "1.12.255.251", //连接的域名 ，请务必修改为您的
@@ -196,11 +177,13 @@ void TaskXMqttRecieve(void *p)
 		.event_handle = MqttCloudsCallBack, //设置回调函数
 		.keepalive = 120,					//心跳
 		.disable_auto_reconnect = false,	//开启自动重连
-		.disable_clean_session = false,		//开启 清除会话
+		.disable_clean_session = true,		//开启 清除会话
 		.buffer_size = 1024,
 	};
+
 	if(client != NULL)
 	{
+		esp_mqtt_client_stop(client);
 		esp_mqtt_client_destroy(client);
 	}
 	client = esp_mqtt_client_init(&mqtt_cfg);
@@ -208,8 +191,6 @@ void TaskXMqttRecieve(void *p)
 
 	vTaskDelete(NULL);
 }
-
-
 
 
 
@@ -373,18 +354,19 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 		routerStartConnect();
 		break;
 	case SYSTEM_EVENT_STA_GOT_IP:
-	{
+		ESP_LOGI(TAG, "SYSTEM_EVENT_STA_GOT_IP");
 		Led_SetState(ONE_HZ);
 		xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
+
 		int ret = pdFAIL;
-		if (handleMqtt == NULL)
-			ret = xTaskCreate(TaskXMqttRecieve, "TaskXMqttRecieve", 1024 * 4, NULL, 5, &handleMqtt);
+		ret = xTaskCreate(TaskXMqttRecieve, "TaskXMqttRecieve", 1024 * 4, NULL, 5, &handleMqtt);
 		if (ret != pdPASS)
 		{
 			printf("create TaskXMqttRecieve thread failed.\n");
 		}
+
+		isWifiConnectd = true;
 		break;
-	}
 
 	case SYSTEM_EVENT_STA_DISCONNECTED:
 		if(Led_GetState() != FIVE_HZ)
@@ -393,7 +375,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 		}
 		esp_wifi_connect();
 		xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
-		isConnect2Server = false;
+		isWifiConnectd = false;
 		break;
 	default:
 		break;

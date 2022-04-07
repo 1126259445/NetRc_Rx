@@ -313,36 +313,35 @@ static uint8_t json_parse(User_data *pMqttMsg)
     return 1;
 }
 
-/* 
- * @Description: 解析下发数据的队列逻辑处理
- * @param: null
- * @return: 
-*/
-extern bool isRecvFlinis; //解析json数据的队列
-void Task_ParseJSON(void *pvParameters)
-{
-	while (1)
-	{
-		if(isRecvFlinis == true)
-		{
-			isRecvFlinis = false;
-			json_parse(&user_data);
-		}
-		vTaskDelay(100/portTICK_RATE_MS);
-	}
-}
+// /* 
+//  * @Description: 解析下发数据的队列逻辑处理
+//  * @param: null
+//  * @return: 
+// */
+// extern bool isRecvFlinis; //解析json数据的队列
+// void Task_ParseJSON(void *pvParameters)
+// {
+// 	while (1)
+// 	{
+// 		if(isRecvFlinis == true)
+// 		{
+// 			isRecvFlinis = false;
+// 			json_parse(&user_data);
+// 		}
+// 		vTaskDelay(100/portTICK_RATE_MS);
+// 	}
+// }
 
 /**
  * @description: Task_CreatJSON 
  * @param {type} 
  * @return: 
  */
-extern bool isConnect2Server;
 void Task_CreatJSON(void *pvParameters)
 {
 	while(1)
 	{
-		if (isConnect2Server)
+		if (isWifiConnectd && isConnect2Server)
 		{
 			if(Rc.ppm_lost == 0)
 			{
