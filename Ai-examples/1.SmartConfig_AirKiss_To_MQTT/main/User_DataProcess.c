@@ -60,63 +60,63 @@ void mqtt_publish_data_interface(char *publish_topic, const char *pub_payload,ui
 }
 
 
-/**************************************
- * @description: user public up_data, json_load_send_data
- * @param {type} 
- * @return: 
- */
-static int Json_Get_Battery()
-{
-	return 88;
-}
-static int Json_Get_Longitude()
-{
-	return 1131234567;
-}
-static int Json_Get_Latitude()
-{
-	return 221234567;
-}
-static int Json_Get_Altitude()
-{
-	return 1100;
-}
-static int Json_Get_Env_Temperature()
-{
-	return Get_Dht11_Temperature();
-}
-static int Json_Get_Env_Humidity()
-{
-	return Get_Dht11_Humidity();
-}
-static int Json_Get_Env_Pressure()
-{
-	return 1010+(rand()%30);
-}
-static int Json_Get_Wind_Speed()
-{
-	return 10+(rand()%30);
-}
-static int Json_Get_Wind_Direction()
-{
-	return 100+(rand()%30);
-}
-static uint32_t Json_Get_Switch()
-{
-	return 0;
-}
-static int Json_Get_Variable_Val_0()
-{
-	return mqtt_cmd.Variable_Val[0];
-}
-static int Json_Get_Variable_Val_1()
-{
-	return mqtt_cmd.Variable_Val[1];
-}
-static int Json_Get_Variable_Val_2()
-{
-	return mqtt_cmd.Variable_Val[2];
-}
+// /**************************************
+//  * @description: user public up_data, json_load_send_data
+//  * @param {type} 
+//  * @return: 
+//  */
+// static int Json_Get_Battery()
+// {
+// 	return 88;
+// }
+// static int Json_Get_Longitude()
+// {
+// 	return 1131234567;
+// }
+// static int Json_Get_Latitude()
+// {
+// 	return 221234567;
+// }
+// static int Json_Get_Altitude()
+// {
+// 	return 1100;
+// }
+// static int Json_Get_Env_Temperature()
+// {
+// 	return Get_Dht11_Temperature();
+// }
+// static int Json_Get_Env_Humidity()
+// {
+// 	return Get_Dht11_Humidity();
+// }
+// static int Json_Get_Env_Pressure()
+// {
+// 	return 1010+(rand()%30);
+// }
+// static int Json_Get_Wind_Speed()
+// {
+// 	return 10+(rand()%30);
+// }
+// static int Json_Get_Wind_Direction()
+// {
+// 	return 100+(rand()%30);
+// }
+// static uint32_t Json_Get_Switch()
+// {
+// 	return 0;
+// }
+// static int Json_Get_Variable_Val_0()
+// {
+// 	return mqtt_cmd.Variable_Val[0];
+// }
+// static int Json_Get_Variable_Val_1()
+// {
+// 	return mqtt_cmd.Variable_Val[1];
+// }
+// static int Json_Get_Variable_Val_2()
+// {
+// 	return mqtt_cmd.Variable_Val[2];
+// }
 
 static void Json_Recv_Cmd_Process(mqtt_cmd_struct* cmd)
 {
@@ -127,64 +127,64 @@ static void Json_Recv_Cmd_Process(mqtt_cmd_struct* cmd)
 
 
 
-/**
- * @description: joson_create_uav_data_send
- * @param {type} 
- * @return: 
- */
-void joson_create_uav_data_send()
-{
-    /* declare a few. */
-	cJSON *root = NULL;
-	cJSON *head = NULL;
-	cJSON *data = NULL;
+// /**
+//  * @description: joson_create_uav_data_send
+//  * @param {type} 
+//  * @return: 
+//  */
+// void joson_create_uav_data_send()
+// {
+//     /* declare a few. */
+// 	cJSON *root = NULL;
+// 	cJSON *head = NULL;
+// 	cJSON *data = NULL;
 		
-    /* Here we construct some JSON standards, from the JSON site. */
-	static uint64_t msg_num = 0;
-	msg_num++;
+//     /* Here we construct some JSON standards, from the JSON site. */
+// 	static uint64_t msg_num = 0;
+// 	msg_num++;
 	
-	static uint64_t timestamp = 1492488028395;
-	timestamp += 1000;
+// 	static uint64_t timestamp = 1492488028395;
+// 	timestamp += 1000;
 
-		/*模拟JSON数据*/
-	root = cJSON_CreateObject();
-	cJSON_AddItemToObject(root,"head",head = cJSON_CreateObject());
-		cJSON_AddNumberToObject(head, "dev_id", 1);
-		cJSON_AddNumberToObject(head, "msg_id", MSG_DATA_UP_ID);
-		cJSON_AddNumberToObject(head, "msg_no", msg_num);
-		cJSON_AddNumberToObject(head, "timestamp", timestamp);
-	cJSON_AddItemToObject(root,"data",data = cJSON_CreateObject());
-		cJSON_AddNumberToObject(data, "Battery", Json_Get_Battery());
-		cJSON_AddNumberToObject(data, "Longitude", Json_Get_Longitude());
-		cJSON_AddNumberToObject(data, "Latitude", Json_Get_Latitude());
-		cJSON_AddNumberToObject(data, "Altitude", Json_Get_Altitude());
-		cJSON_AddNumberToObject(data, "Env_Temperature", Json_Get_Env_Temperature());
-		cJSON_AddNumberToObject(data, "Env_Humidity", Json_Get_Env_Humidity());
-		cJSON_AddNumberToObject(data, "Env_Pressure", Json_Get_Env_Pressure());
-		cJSON_AddNumberToObject(data, "Wind_Speed", Json_Get_Wind_Speed());
-		cJSON_AddNumberToObject(data, "Wind_Direction", Json_Get_Wind_Direction());
-		cJSON_AddNumberToObject(data, "Switch", Json_Get_Switch());
-		cJSON_AddNumberToObject(data, "Variable_Val_0", Json_Get_Variable_Val_0());
-		cJSON_AddNumberToObject(data, "Variable_Val_1", Json_Get_Variable_Val_1());
-		cJSON_AddNumberToObject(data, "Variable_Val_2", Json_Get_Variable_Val_2());
+// 		/*模拟JSON数据*/
+// 	root = cJSON_CreateObject();
+// 	cJSON_AddItemToObject(root,"head",head = cJSON_CreateObject());
+// 		cJSON_AddNumberToObject(head, "dev_id", 1);
+// 		cJSON_AddNumberToObject(head, "msg_id", MSG_DATA_UP_ID);
+// 		cJSON_AddNumberToObject(head, "msg_no", msg_num);
+// 		cJSON_AddNumberToObject(head, "timestamp", timestamp);
+// 	cJSON_AddItemToObject(root,"data",data = cJSON_CreateObject());
+// 		cJSON_AddNumberToObject(data, "Battery", Json_Get_Battery());
+// 		cJSON_AddNumberToObject(data, "Longitude", Json_Get_Longitude());
+// 		cJSON_AddNumberToObject(data, "Latitude", Json_Get_Latitude());
+// 		cJSON_AddNumberToObject(data, "Altitude", Json_Get_Altitude());
+// 		cJSON_AddNumberToObject(data, "Env_Temperature", Json_Get_Env_Temperature());
+// 		cJSON_AddNumberToObject(data, "Env_Humidity", Json_Get_Env_Humidity());
+// 		cJSON_AddNumberToObject(data, "Env_Pressure", Json_Get_Env_Pressure());
+// 		cJSON_AddNumberToObject(data, "Wind_Speed", Json_Get_Wind_Speed());
+// 		cJSON_AddNumberToObject(data, "Wind_Direction", Json_Get_Wind_Direction());
+// 		cJSON_AddNumberToObject(data, "Switch", Json_Get_Switch());
+// 		cJSON_AddNumberToObject(data, "Variable_Val_0", Json_Get_Variable_Val_0());
+// 		cJSON_AddNumberToObject(data, "Variable_Val_1", Json_Get_Variable_Val_1());
+// 		cJSON_AddNumberToObject(data, "Variable_Val_2", Json_Get_Variable_Val_2());
 		
-		/*Cjson 2 char*/
-		const char *pub_payload = NULL;
-		pub_payload = cJSON_Print(root);
+// 		/*Cjson 2 char*/
+// 		const char *pub_payload = NULL;
+// 		pub_payload = cJSON_Print(root);
 
-        char publish_topic[12] = {DEVECE_ID};
-	    strcat(publish_topic,"_UP");
+//         char publish_topic[12] = {DEVECE_ID};
+// 	    strcat(publish_topic,"_UP");
 
-        /*publish JSON data to server*/
-        mqtt_publish_data_interface(publish_topic, pub_payload,0,0);
+//         /*publish JSON data to server*/
+//         mqtt_publish_data_interface(publish_topic, pub_payload,0,0);
 
-		if(pub_payload!=NULL)
-		{
-			free(pub_payload);
-		}
+// 		if(pub_payload!=NULL)
+// 		{
+// 			free(pub_payload);
+// 		}
 
-    cJSON_Delete(root);
-}
+//     cJSON_Delete(root);
+// }
 
 
 
@@ -200,7 +200,6 @@ static uint8_t json_parse(User_data *pMqttMsg)
     /* Head*/
     uint32_t msg_id = 0;
     uint32_t msg_no = 0;
-    double timestamp = 0;
     
 
 	////首先整体判断是否为一个json格式的数据
@@ -224,7 +223,6 @@ static uint8_t json_parse(User_data *pMqttMsg)
             /* 获取消息ID确认消息类型 */
             msg_id = cJSON_GetObjectItem(head_item, "msg_id")->valueint;
             msg_no = cJSON_GetObjectItem(head_item, "msg_no")->valueint;
-            timestamp = cJSON_GetObjectItem(head_item, "timestamp")->valuedouble;
 //            printf( "msg_id: %d\n", msg_id);
 //            printf( "msg_no: %d\n", msg_no);
 			
@@ -254,22 +252,17 @@ static uint8_t json_parse(User_data *pMqttMsg)
 				 data_item = cJSON_GetObjectItem(root, "data");
 				if (data_item)
                 {
-                    mqtt_cmd.Switch = cJSON_GetObjectItem(data_item, "Switch")->valueint;
-                    mqtt_cmd.Variable_Val[0] = cJSON_GetObjectItem(data_item, "Variable_Val_0")->valueint;
-					mqtt_cmd.Variable_Val[1] = cJSON_GetObjectItem(data_item, "Variable_Val_1")->valueint;
-					mqtt_cmd.Variable_Val[2] = cJSON_GetObjectItem(data_item, "Variable_Val_2")->valueint;
-					mqtt_cmd.Variable_Val[3] = cJSON_GetObjectItem(data_item, "Variable_Val_3")->valueint;
-					mqtt_cmd.Variable_Val[4] = cJSON_GetObjectItem(data_item, "Variable_Val_4")->valueint;
-					mqtt_cmd.Variable_Val[5] = cJSON_GetObjectItem(data_item, "Variable_Val_5")->valueint;
-					mqtt_cmd.Variable_Val[6] = cJSON_GetObjectItem(data_item, "Variable_Val_6")->valueint;
-					mqtt_cmd.Variable_Val[7] = cJSON_GetObjectItem(data_item, "Variable_Val_7")->valueint;
+                    mqtt_cmd.Variable_Val[0] = cJSON_GetObjectItem(data_item, "ch_0")->valueint;
+					mqtt_cmd.Variable_Val[1] = cJSON_GetObjectItem(data_item, "ch_1")->valueint;
+					mqtt_cmd.Variable_Val[2] = cJSON_GetObjectItem(data_item, "ch_2")->valueint;
+					mqtt_cmd.Variable_Val[3] = cJSON_GetObjectItem(data_item, "ch_3")->valueint;
+					mqtt_cmd.Variable_Val[4] = cJSON_GetObjectItem(data_item, "ch_4")->valueint;
+					mqtt_cmd.Variable_Val[5] = cJSON_GetObjectItem(data_item, "ch_5")->valueint;
+					mqtt_cmd.Variable_Val[6] = cJSON_GetObjectItem(data_item, "ch_6")->valueint;
+					mqtt_cmd.Variable_Val[7] = cJSON_GetObjectItem(data_item, "ch_7")->valueint;
 
-				/*mqtt_cmd.Variable_Val[0] = 1000+mqtt_cmd.Variable_Val[0]*4;
-						mqtt_cmd.Variable_Val[1] = 1000+mqtt_cmd.Variable_Val[1]*4;
-								mqtt_cmd.Variable_Val[2] = 1000+mqtt_cmd.Variable_Val[2]*4;
-				*/
-					printf("Switch: %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\n", \
-					mqtt_cmd.Switch,mqtt_cmd.Variable_Val[0],mqtt_cmd.Variable_Val[1],mqtt_cmd.Variable_Val[2], \
+					printf("%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\n", \
+					mqtt_cmd.Variable_Val[0],mqtt_cmd.Variable_Val[1],mqtt_cmd.Variable_Val[2], \
 					mqtt_cmd.Variable_Val[3],mqtt_cmd.Variable_Val[4],mqtt_cmd.Variable_Val[5], \
 					mqtt_cmd.Variable_Val[6],mqtt_cmd.Variable_Val[7]);
 
@@ -333,22 +326,22 @@ void Task_ParseJSON(void *pvParameters)
 	}
 }
 
-/**
- * @description: Task_CreatJSON 
- * @param {type} 
- * @return: 
- */
-extern bool isConnect2Server;
-void Task_CreatJSON(void *pvParameters)
-{
-	while(1)
-	{
-		//post_data_to_clouds();
-		if (isConnect2Server)
-		{
-			joson_create_uav_data_send();
-		}
+// /**
+//  * @description: Task_CreatJSON 
+//  * @param {type} 
+//  * @return: 
+//  */
+// extern bool isConnect2Server;
+// void Task_CreatJSON(void *pvParameters)
+// {
+// 	while(1)
+// 	{
+// 		//post_data_to_clouds();
+// 		if (isConnect2Server)
+// 		{
+// 			joson_create_uav_data_send();
+// 		}
 
-		vTaskDelay(1000/portTICK_RATE_MS);
-	}
-}
+// 		vTaskDelay(1000/portTICK_RATE_MS);
+// 	}
+// }
