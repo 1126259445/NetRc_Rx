@@ -163,20 +163,14 @@ void joson_create_uav_data_send()
 		
     /* Here we construct some JSON standards, from the JSON site. */
 	static uint64_t msg_num = 0;
-	msg_num++;
-	
-	static uint64_t timestamp = 1492488028395;
-	timestamp += 1000;
+	msg_num++;	
 
 		/*模拟JSON数据*/
 	root = cJSON_CreateObject();
 	cJSON_AddItemToObject(root,"head",head = cJSON_CreateObject());
-		cJSON_AddNumberToObject(head, "dev_id", 1);
 		cJSON_AddNumberToObject(head, "msg_id", MSG_DATA_DOWN_ID);
 		cJSON_AddNumberToObject(head, "msg_no", msg_num);
-		cJSON_AddNumberToObject(head, "timestamp", timestamp);
 	cJSON_AddItemToObject(root,"data",data = cJSON_CreateObject());
-
 /*		cJSON_AddNumberToObject(data, "Battery", Json_Get_Battery());
 		cJSON_AddNumberToObject(data, "Longitude", Json_Get_Longitude());
 		cJSON_AddNumberToObject(data, "Latitude", Json_Get_Latitude());
@@ -187,22 +181,18 @@ void joson_create_uav_data_send()
 		cJSON_AddNumberToObject(data, "Wind_Speed", Json_Get_Wind_Speed());
 		cJSON_AddNumberToObject(data, "Wind_Direction", Json_Get_Wind_Direction());
 */
-		cJSON_AddNumberToObject(data, "Switch", Json_Get_Switch());
-		cJSON_AddNumberToObject(data, "Variable_Val_0", Json_Get_Variable_Val_0());
-		cJSON_AddNumberToObject(data, "Variable_Val_1", Json_Get_Variable_Val_1());
-		cJSON_AddNumberToObject(data, "Variable_Val_2", Json_Get_Variable_Val_2());
-		cJSON_AddNumberToObject(data, "Variable_Val_3", Json_Get_Variable_Val_3());
-		cJSON_AddNumberToObject(data, "Variable_Val_4", Json_Get_Variable_Val_4());
-		cJSON_AddNumberToObject(data, "Variable_Val_5", Json_Get_Variable_Val_5());
-		cJSON_AddNumberToObject(data, "Variable_Val_6", Json_Get_Variable_Val_6());
-		cJSON_AddNumberToObject(data, "Variable_Val_7", Json_Get_Variable_Val_7());
+		cJSON_AddNumberToObject(data, "ch_0", Json_Get_Variable_Val_0());
+		cJSON_AddNumberToObject(data, "ch_1", Json_Get_Variable_Val_1());
+		cJSON_AddNumberToObject(data, "ch_2", Json_Get_Variable_Val_2());
+		cJSON_AddNumberToObject(data, "ch_3", Json_Get_Variable_Val_3());
+		cJSON_AddNumberToObject(data, "ch_4", Json_Get_Variable_Val_4());
+		cJSON_AddNumberToObject(data, "ch_5", Json_Get_Variable_Val_5());
+		cJSON_AddNumberToObject(data, "ch_6", Json_Get_Variable_Val_6());
+		cJSON_AddNumberToObject(data, "ch_7", Json_Get_Variable_Val_7());
 		
 		/*Cjson 2 char*/
 		const char *pub_payload = NULL;
 		pub_payload = cJSON_Print(root);
-
-//        char publish_topic[12] = {DEVECE_ID};
-//	    strcat(publish_topic,"_UP");
 
         /*publish JSON data to server*/
         mqtt_publish_data_interface(MqttTopicPub, pub_payload,0,0);
