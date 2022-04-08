@@ -192,7 +192,7 @@ void joson_create_uav_data_send()
 		
 		/*Cjson 2 char*/
 		const char *pub_payload = NULL;
-		pub_payload = cJSON_Print(root);
+		pub_payload = cJSON_PrintUnformatted(root);
 
         /*publish JSON data to server*/
         mqtt_publish_data_interface(MqttTopicPub, pub_payload,0,0);
@@ -207,101 +207,102 @@ void joson_create_uav_data_send()
 
 
 
-/**
- * @description: json_parse
- * @param {type} 
- * @return: 
- */
-static uint8_t json_parse(User_data *pMqttMsg)
-{
-    cJSON *root, *head_item, *data_item;
+// /**
+//  * @description: json_parse
+//  * @param {type} 
+//  * @return: 
+//  */
+// static uint8_t json_parse(User_data *pMqttMsg)
+// {
+//     cJSON *root, *head_item, *data_item;
     
-    /* Head*/
-    uint32_t msg_id = 0;
-    uint32_t msg_no = 0;
-    double timestamp = 0;
+//     /* Head*/
+//     uint32_t msg_id = 0;
+//     uint32_t msg_no = 0;
+//     double timestamp = 0;
     
 
-	////首先整体判断是否为一个json格式的数据
-	root = cJSON_Parse(pMqttMsg->allData);
-	//如果是否json格式数据
-	if (root == NULL)
-	{
-		printf("[SY] Task_ParseJSON_Message xQueueReceive not json ... \n");
-		cJSON_Delete(root);
-		return 0;
-	}
+// 	////首先整体判断是否为一个json格式的数据
+// 	root = cJSON_Parse(pMqttMsg->allData);
+// 	//如果是否json格式数据
+// 	if (root == NULL)
+// 	{
+// 		printf("[SY] Task_ParseJSON_Message xQueueReceive not json ... \n");
+// 		cJSON_Delete(root);
+// 		return 0;
+// 	}
 
-	printf( "\nbuf_LEN: %d\n", pMqttMsg->dataLen);
+// 	printf( "\nbuf_LEN: %d\n", pMqttMsg->dataLen);
     
-    if (root)
-    {
-		head_item = cJSON_GetObjectItem(root, "head");
+//     if (root)
+//     {
+// 		head_item = cJSON_GetObjectItem(root, "head");
         
-        if (head_item)
-        {
-            /* 获取消息ID确认消息类型 */
-            msg_id = cJSON_GetObjectItem(head_item, "msg_id")->valueint;
-            msg_no = cJSON_GetObjectItem(head_item, "msg_no")->valueint;
-            timestamp = cJSON_GetObjectItem(head_item, "timestamp")->valuedouble;
-            printf( "msg_id: %d\n", msg_id);
-            printf( "msg_no: %d\n", msg_no);
+//         if (head_item)
+//         {
+//             /* 获取消息ID确认消息类型 */
+//             msg_id = cJSON_GetObjectItem(head_item, "msg_id")->valueint;
+//             msg_no = cJSON_GetObjectItem(head_item, "msg_no")->valueint;
+//             timestamp = cJSON_GetObjectItem(head_item, "timestamp")->valuedouble;
+//             printf( "msg_id: %d\n", msg_id);
+//             printf( "msg_no: %d\n", msg_no);
 			
-            switch (msg_id)
-            {
-            case MSG_POWER_ON_ID:
-                /* 开机应答 */
-                data_item = cJSON_GetObjectItem(root, "data");                
-                if (data_item)
-                {
+//             switch (msg_id)
+//             {
+//             case MSG_POWER_ON_ID:
+//                 /* 开机应答 */
+//                 data_item = cJSON_GetObjectItem(root, "data");                
+//                 if (data_item)
+//                 {
 				
-				}
-                break;
+// 				}
+//                 break;
             
-            case MSG_HRAET_ID:
-                /* 心跳应答 */
-                data_item = cJSON_GetObjectItem(root, "data");
+//             case MSG_HRAET_ID:
+//                 /* 心跳应答 */
+//                 data_item = cJSON_GetObjectItem(root, "data");
                 
-                if (data_item)
-                {
+//                 if (data_item)
+//                 {
 
-                }           
-                break;
+//                 }           
+//                 break;
 				
-			case MSG_DATA_DOWN_ID:
-				/*下发的控制命令*/
-				 data_item = cJSON_GetObjectItem(root, "data");
-				if (data_item)
-                {
-                    mqtt_cmd.Switch = cJSON_GetObjectItem(data_item, "Switch")->valueint;
-                    mqtt_cmd.Variable_Val[0] = cJSON_GetObjectItem(data_item, "Variable_Val_0")->valueint;
-					mqtt_cmd.Variable_Val[1] = cJSON_GetObjectItem(data_item, "Variable_Val_1")->valueint;
-					mqtt_cmd.Variable_Val[2] = cJSON_GetObjectItem(data_item, "Variable_Val_2")->valueint;
-				//	mqtt_cmd.Variable_Val[3] = cJSON_GetObjectItem(data_item, "Variable_Val_3")->valueint;
-				//	mqtt_cmd.Variable_Val[4] = cJSON_GetObjectItem(data_item, "Variable_Val_4")->valueint;
-				//	mqtt_cmd.Variable_Val[5] = cJSON_GetObjectItem(data_item, "Variable_Val_5")->valueint;
-				//	mqtt_cmd.Variable_Val[6] = cJSON_GetObjectItem(data_item, "Variable_Val_6")->valueint;
-				//	mqtt_cmd.Variable_Val[7] = cJSON_GetObjectItem(data_item, "Variable_Val_7")->valueint;
+// 			case MSG_DATA_DOWN_ID:
+// 				/*下发的控制命令*/
+// 				 data_item = cJSON_GetObjectItem(root, "data");
+// 				if (data_item)
+//                 {
+//                     mqtt_cmd.Switch = cJSON_GetObjectItem(data_item, "Switch")->valueint;
+//                     mqtt_cmd.Variable_Val[0] = cJSON_GetObjectItem(data_item, "Variable_Val_0")->valueint;
+// 					mqtt_cmd.Variable_Val[1] = cJSON_GetObjectItem(data_item, "Variable_Val_1")->valueint;
+// 					mqtt_cmd.Variable_Val[2] = cJSON_GetObjectItem(data_item, "Variable_Val_2")->valueint;
+// 				//	mqtt_cmd.Variable_Val[3] = cJSON_GetObjectItem(data_item, "Variable_Val_3")->valueint;
+// 				//	mqtt_cmd.Variable_Val[4] = cJSON_GetObjectItem(data_item, "Variable_Val_4")->valueint;
+// 				//	mqtt_cmd.Variable_Val[5] = cJSON_GetObjectItem(data_item, "Variable_Val_5")->valueint;
+// 				//	mqtt_cmd.Variable_Val[6] = cJSON_GetObjectItem(data_item, "Variable_Val_6")->valueint;
+// 				//	mqtt_cmd.Variable_Val[7] = cJSON_GetObjectItem(data_item, "Variable_Val_7")->valueint;
 
-				mqtt_cmd.Variable_Val[0] = 1000+mqtt_cmd.Variable_Val[0]*4;
-						mqtt_cmd.Variable_Val[1] = 1000+mqtt_cmd.Variable_Val[1]*4;
-								mqtt_cmd.Variable_Val[2] = 1000+mqtt_cmd.Variable_Val[2]*4;
-					printf("Switch: %d\n 0: %d\n 1: %d\n 2: %d\n 3: %d\n 4: %d\n 5: %d\n 6: %d\n 7: %d\n", \
-					mqtt_cmd.Switch,mqtt_cmd.Variable_Val[0],mqtt_cmd.Variable_Val[1],mqtt_cmd.Variable_Val[2], \
-					mqtt_cmd.Variable_Val[3],mqtt_cmd.Variable_Val[4],mqtt_cmd.Variable_Val[5], \
-					mqtt_cmd.Variable_Val[6],mqtt_cmd.Variable_Val[7]);
-					Json_Recv_Cmd_Process(&mqtt_cmd);
-				}
-				break;
+// 				mqtt_cmd.Variable_Val[0] = 1000+mqtt_cmd.Variable_Val[0]*4;
+// 						mqtt_cmd.Variable_Val[1] = 1000+mqtt_cmd.Variable_Val[1]*4;
+// 								mqtt_cmd.Variable_Val[2] = 1000+mqtt_cmd.Variable_Val[2]*4;
+/* 					printf("Switch: %d\n 0: %d\n 1: %d\n 2: %d\n 3: %d\n 4: %d\n 5: %d\n 6: %d\n 7: %d\n", \
+ 					mqtt_cmd.Switch,mqtt_cmd.Variable_Val[0],mqtt_cmd.Variable_Val[1],mqtt_cmd.Variable_Val[2], \
+ 					mqtt_cmd.Variable_Val[3],mqtt_cmd.Variable_Val[4],mqtt_cmd.Variable_Val[5], \
+ 					mqtt_cmd.Variable_Val[6],mqtt_cmd.Variable_Val[7]);
+*/
+// 					Json_Recv_Cmd_Process(&mqtt_cmd);
+// 				}
+// 				break;
                    
-            }
-        }
-    }
+//             }
+//         }
+//     }
     
-    cJSON_Delete(root);
+//     cJSON_Delete(root);
     
-    return 1;
-}
+//     return 1;
+// }
 
 // /* 
 //  * @Description: 解析下发数据的队列逻辑处理
