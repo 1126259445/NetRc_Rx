@@ -193,7 +193,7 @@ void TaskXMqttRecieve(void *p)
 	ESP_LOGI(TAG, "TaskXMqttRecieve creat");
 	//连接的配置参数
 	esp_mqtt_client_config_t mqtt_cfg = {
-		.host = "1.12.255.251", //连接的域名 ，请务必修改为您的
+		.host = "www.jytk.xyz", //连接的域名 ，请务必修改为您的
 		.port = 1883,			   //端口，请务必修改为您的
 		.username = "admin",	   //用户名，请务必修改为您的
 		.password = "admin",   //密码，请务必修改为您的
