@@ -330,13 +330,38 @@ void joson_create_uav_data_send()
  */
 void Task_CreatJSON(void *pvParameters)
 {
+	static int16_t last_rc[10] = {0};
+	uint8_t ifRcDataUpdate = 0;
+	uint8_t OldDataRecvCount = 0;
 	while(1)
 	{
 		if (isWifiConnectd && isConnect2Server)
 		{
 			if(Rc.ppm_lost == 0)
 			{
-				joson_create_uav_data_send();
+				ifRcDataUpdate = 0;
+				for(uint8_t i =0 ; i < 10;i++)
+				{
+					if(last_rc[i] != Rc.RC_ch[i])
+					{
+						ifRcDataUpdate  = 1;
+					}
+					last_rc[i] = Rc.RC_ch[i];
+				}
+
+				if(ifRcDataUpdate)
+				{
+					joson_create_uav_data_send();
+					OldDataRecvCount = 0;
+				}
+				else 
+				{
+					if(++OldDataRecvCount > 5)
+					{
+						joson_create_uav_data_send();
+						OldDataRecvCount = 0;
+					}
+				}
 				Led_SetState(OFF);
 			}
 			else
