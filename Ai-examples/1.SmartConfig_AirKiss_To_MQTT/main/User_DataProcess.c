@@ -352,6 +352,6 @@ void Task_CreatJSON(void *pvParameters)
 			}
 		}
 		
-		vTaskDelay(50/portTICK_RATE_MS);
+		vTaskDelay(100/portTICK_RATE_MS);
 	}
 }
