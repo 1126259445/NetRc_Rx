@@ -3,6 +3,7 @@
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 #include "freertos/queue.h"
+#include "freertos/semphr.h"
 #include "esp_log.h"
 #include "mqtt_client.h"
 #include "cJSON.h"
@@ -10,6 +11,7 @@
 #include "string.h"
 #include "xpwm.h"
 
+#include "app_main.h"
 #include "User_NvsData.h"
 #include "User_DataProcess.h"
 #include "Dev_Dht11.h"
@@ -293,11 +295,10 @@ void Task_ParseJSON(void *pvParameters)
 	{
 		if(isWifiConnectd && isConnect2Server)
 		{
-			if(isRecvFlinis == true)
+			if(xSemaphoreTake(xSemaphore,100))
 			{
 				Led_SetState(OFF);
 				LastRecvTime = esp_get_time();
-				isRecvFlinis = false;
 				json_parse(&user_data);
 			}
 			else
@@ -322,7 +323,7 @@ void Task_ParseJSON(void *pvParameters)
 			vTaskDelay(500/portTICK_RATE_MS);
 		}
 		
-		vTaskDelay(10/portTICK_RATE_MS);
+		//vTaskDelay(10/portTICK_RATE_MS);
 	}
 }
 

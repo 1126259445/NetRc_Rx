@@ -74,6 +74,7 @@ static xTaskHandle handleLlocalFind = NULL;
 static xTaskHandle handleMqtt = NULL;
 xQueueHandle ParseJSONQueueHandler = NULL; //解析json数据的队列
 xTaskHandle mHandlerParseJSON = NULL;	  //任务队列
+SemaphoreHandle_t xSemaphore;
 
 
 
@@ -171,7 +172,7 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 			user_data.dataLen = event->data_len;
 
 			isRecvFlinis = true;
-			
+			xSemaphoreGive(xSemaphore);
 //			ESP_LOGI(TAG, "isRecvFlinis == true");
 		}
 		break;
@@ -648,6 +649,9 @@ void app_main(void)
 	//xTaskCreate(Task_Sensor, "Task_Sensor", 1024, NULL, 6, NULL);
 	xTaskCreate(Task_ParseJSON, "Task_ParseJSON", 1024*3, NULL, 5, NULL);
 	
+	/* 创建信号量 */
+    xSemaphore = xSemaphoreCreateBinary();
+
 	tcpip_adapter_init();
 	wifi_event_group = xEventGroupCreate();
 	ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL));
