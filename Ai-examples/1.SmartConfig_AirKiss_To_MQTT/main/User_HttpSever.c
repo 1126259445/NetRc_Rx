@@ -39,13 +39,13 @@ char home_html[1500] = {" \
 </head> \
 <style> \
 #myHeader { \
-  background: lightblue; \
- padding: 180px; \
-  color: black; \
-  text-align: center; \
+    padding-top: 250px; \
+    padding: 180px; \
+    color: black; \
+    text-align: center; \
 } \
 </style> \
-	<body>  \
+	<body bgcolor=lightblue>  \
     	<div id=myHeader>  \
         	<h1>NetRc设置</h1> \
 		<form action=\"wifi_set\"> \
