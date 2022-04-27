@@ -182,7 +182,7 @@ extern char deviceUUID[17];
 void HttpSever_Init()
 {
     sprintf(homeindex,"<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF8\"> \
-    <title>NetRc</title></head><body><style>#myHeader {background: lightblue;padding: 280px;color: black;text-align: center;}</style> \
+    <title>NetRc</title></head><body bgcolor=lightblue><style>#myHeader {padding-top: 250px;color: black;text-align: center;}</style> \
     <div id=myHeader><h1>NetRc设置</h1><form name=\"my\">WiFi名称：<input type=\"text\"name=\"ssid\"placeholder=\"请输入您WiFi的名称\"> \
     <br>WiFi密码：<input type=\"text\"name=\"password\"placeholder=\"请输入您WiFi的密码\"><input type=\"submit\"value=\"连接\"> \
     <br><br>设备MAC：%s<br></form></body></html>",deviceUUID);
