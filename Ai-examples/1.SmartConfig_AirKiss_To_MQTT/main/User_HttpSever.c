@@ -167,6 +167,8 @@ esp_err_t wifi_get_handler(httpd_req_t *req)
                     router_wifi_save_info((uint8_t*)ssid,(uint8_t*)password);
                     ESP_LOGI(TAG, "HOME Found URL query parameter => ssid=%s", ssid);
                     ESP_LOGI(TAG, "HOME Found URL query parameter => password=%s", password);
+                    memset(User_HttpSeverInfo.ssid,0,sizeof(User_HttpSeverInfo.ssid));
+                    memset(User_HttpSeverInfo.password,0,sizeof(User_HttpSeverInfo.password));
                     memcpy(User_HttpSeverInfo.ssid,ssid,strlen(ssid));
                     memcpy(User_HttpSeverInfo.password,password,strlen(password));
                     
@@ -182,6 +184,7 @@ esp_err_t wifi_get_handler(httpd_req_t *req)
                   if(strlen(subid) != 0)
                   {
                     ESP_LOGI(TAG, "HOME Found URL query parameter => subid=%s", subid);
+                    memset(User_HttpSeverInfo.subid,0,sizeof(User_HttpSeverInfo.subid));
                     memcpy(User_HttpSeverInfo.subid,subid,strlen(subid));
                   }
                   else

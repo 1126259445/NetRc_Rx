@@ -58,48 +58,49 @@ void NetRc_save_info(User_HttpSeverInfo_t *User_HttpSeverInfo)
 {
     nvs_handle out_handle_Device;
  
-    if (nvs_open("DeviceInfo", NVS_READWRITE, &out_handle_Device) != ESP_OK)
+    if (nvs_open("DeviceInfo", NVS_READWRITE, &out_handle_Device) == ESP_OK)
     {
-        return;
-    }
+        nvs_erase_all(out_handle_Device);
 
-    if (nvs_set_str(out_handle_Device, "Wifi_Ssid", (char*)User_HttpSeverInfo->ssid) != ESP_OK)
-    {
-        printf("--Save Wifi_Ssid fail");
-    }
+        if (nvs_set_str(out_handle_Device, "Wifi_Ssid", (char*)User_HttpSeverInfo->ssid) != ESP_OK)
+        {
+            printf("--Save Wifi_Ssid fail\r\n");
+        }
 
-    if (nvs_set_str(out_handle_Device, "Wifi_Password", (char*)User_HttpSeverInfo->password) != ESP_OK)
-    {
-        printf("--Save Wifi_Password fail");
-    }
+        if (nvs_set_str(out_handle_Device, "Wifi_Password", (char*)User_HttpSeverInfo->password) != ESP_OK)
+        {
+            printf("--Save Wifi_Password fail\r\n");
+        }
 
-    if (nvs_set_str(out_handle_Device, "Subid", (char*)User_HttpSeverInfo->subid) != ESP_OK)
-    {
-        printf("--Save Device_Mac fail");
-    }
+        if (nvs_set_str(out_handle_Device, "Subid", (char*)User_HttpSeverInfo->subid) != ESP_OK)
+        {
+            printf("--Save Device_Mac fail\r\n");
+        }
 
-    if (nvs_set_u16(out_handle_Device, "Safe_Ch_Val1", User_HttpSeverInfo->safe_ch_val[0]) != ESP_OK)
-    {
-        printf("--Save Safe_Ch_Val fail");
-    }
-    if (nvs_set_u16(out_handle_Device, "Safe_Ch_Val2", User_HttpSeverInfo->safe_ch_val[1]) != ESP_OK)
-    {
-        printf("--Save Safe_Ch_Val fail");
-    }
-    if (nvs_set_u16(out_handle_Device, "Safe_Ch_Val3", User_HttpSeverInfo->safe_ch_val[2]) != ESP_OK)
-    {
-        printf("--Save Safe_Ch_Val fail");
-    }
-    if (nvs_set_u16(out_handle_Device, "Safe_Ch_Val4", User_HttpSeverInfo->safe_ch_val[3]) != ESP_OK)
-    {
-        printf("--Save Safe_Ch_Val fail");
-    }
-    if (nvs_set_u16(out_handle_Device, "Safe_Ch_Val5", User_HttpSeverInfo->safe_ch_val[4]) != ESP_OK)
-    {
-        printf("--Save Safe_Ch_Val fail");
-    }
+        if (nvs_set_u16(out_handle_Device, "Safe_Ch_Val1", User_HttpSeverInfo->safe_ch_val[0]) != ESP_OK)
+        {
+            printf("--Save Safe_Ch_Val fail\r\n");
+        }
+        if (nvs_set_u16(out_handle_Device, "Safe_Ch_Val2", User_HttpSeverInfo->safe_ch_val[1]) != ESP_OK)
+        {
+            printf("--Save Safe_Ch_Val fail\r\n");
+        }
+        if (nvs_set_u16(out_handle_Device, "Safe_Ch_Val3", User_HttpSeverInfo->safe_ch_val[2]) != ESP_OK)
+        {
+            printf("--Save Safe_Ch_Val fail\r\n");
+        }
+        if (nvs_set_u16(out_handle_Device, "Safe_Ch_Val4", User_HttpSeverInfo->safe_ch_val[3]) != ESP_OK)
+        {
+            printf("--Save Safe_Ch_Val fail\r\n");
+        }
+        if (nvs_set_u16(out_handle_Device, "Safe_Ch_Val5", User_HttpSeverInfo->safe_ch_val[4]) != ESP_OK)
+        {
+            printf("--Save Safe_Ch_Val fail\r\n");
+        }
 
-    nvs_close(out_handle_Device);
+        nvs_close(out_handle_Device);
+        printf("NetRc_save_info OK\r\n");
+    }
 }
 
 
