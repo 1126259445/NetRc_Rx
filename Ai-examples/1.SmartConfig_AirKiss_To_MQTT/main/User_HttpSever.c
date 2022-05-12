@@ -29,56 +29,20 @@ static const char *TAG="USER_HTTP_Sever";
 static wifi_config_t Wifi_info;
 
 
-char home_html[1500] = {" \
-<!DOCTYPE html> \
-<html lang=\"en\"> \
-<head>  \
-	<meta charset=\"UTF-8\">  \
-	<title>ESP8266</title>  \
-		\
-</head> \
-<style> \
-#myHeader { \
-    padding-top: 250px; \
-    padding: 180px; \
-    color: black; \
-    text-align: center; \
-} \
-</style> \
-	<body bgcolor=lightblue>  \
-    	<div id=myHeader>  \
-        	<h1>NetRc设置</h1> \
-		<form action=\"wifi_set\"> \
-			WiFi名称： \
-			<input type=\"text\" name=\"ssid\" placeholder=\"请输入您WiFi的名称\"> \
-		    <br> \
-			WiFi密码： \
-			<input type=\"text\" name=\"password\" placeholder=\"请输入您WiFi的密码\"> \
-			<input type=\"submit\" value=\"连接\"> \
-			<br><br> \
-			订阅ID： \
-			<input type=\"text\" name=\"subid\" placeholder=\"请输入发射端的ID\">  \
-			<input type=\"submit\" value=\"设置\"> \
-		</form> \
-            <br><br> \
-		<form action=\"safe_ch_set\"> \
-  		失控保护: 通道1<input type=\"number\" name=\"safe_ch1\" value= \"1500\" min=\"1000\" max=\"2000\"> \
-			    通道2<input type=\"number\" name=\"safe_ch2\" value= \"1500\" min=\"1000\" max=\"2000\"> \
-			    通道3<input type=\"number\" name=\"safe_ch3\" value= \"1500\" min=\"1000\" max=\"2000\">	\
-                通道4<input type=\"number\" name=\"safe_ch4\" value= \"1500\" min=\"1000\" max=\"2000\"> \
-			    通道5<input type=\"number\" name=\"safe_ch5\" value= \"1500\" min=\"1000\" max=\"2000\"> \
-  		<input type=\"submit\" value=\"设置\"> \
-		</form> \
-		<br><br> \
-		系统设置： \
-		<br> \
-		<form action=\"sys_reset\"> \
-  		<input type=\"submit\" value=\"重启\"> \
-		</form> \
-	</body> \
-</html> \
-"} ;
-
+const char home_html[2500] = {"<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>ESP8266</title><script type='text/javascript'> \ 
+function WifiClicked(){ssid=document.getElementById('ssid').value;password=document.getElementById('password').value;alert('SSID: '+ssid+'   PASSWORD: '+password)} \
+function SubidClicked(){subid=document.getElementById('subid').value;alert('SUBID: '+subid)}function SafeClicked() \
+{safe_ch1=document.getElementById('safe_ch1').value;safe_ch2=document.getElementById('safe_ch2').value;safe_ch3=document.getElementById('safe_ch3').value; \
+safe_ch4=document.getElementById('safe_ch4').value;safe_ch5=document.getElementById('safe_ch5').value; \
+alert('safe_ch : '+safe_ch1+'  '+safe_ch2+'  '+safe_ch3+'  '+safe_ch4+'  '+safe_ch5)}</script></head><body bgcolor=lightblue><style>#myHeader \
+{padding-top:250px;color:black;text-align:center}</style><div id=myHeader><h1>NetRc设置</h1><br><form action='wifi_set'>WiFi名称： \
+<input type='text'name='ssid'id='ssid'placeholder='请输入您WiFi的名称'><br>WiFi密码：<input type='text'name='password'id='password'placeholder='请输入您WiFi的密码'> \
+<input type='submit'value='连接'onclick='WifiClicked()'><br><br>订阅ID：<input type='text'name='subid'id='subid'placeholder='请输入发射端的ID'> \
+<input type='submit'value='设置'onclick='SubidClicked()'></form><br><br><form action='safe_ch_set'>失控保护:通道1<input  \
+type='number'name='safe_ch1'id='safe_ch1'value='1500'min='1000'max='2000'>通道2<input type='number'name='safe_ch2'id='safe_ch2'value='1500'min='1000'max='2000'> \
+通道3<input type='number'name='safe_ch3'id='safe_ch3'value='1500'min='1000'max='2000'>通道4<input type='number'name='safe_ch4'id='safe_ch4'value='1500'min='1000'max='2000'> \
+通道5<input type='number'name='safe_ch5'id='safe_ch5'value='1500'min='1000'max='2000'><input type='submit'value='设置'onclick='SafeClicked()'></form><br><br> \
+系统设置：<br><form action='sys_reset'><input type='submit'value='重启'></form></body></html>"};
 
 
 
