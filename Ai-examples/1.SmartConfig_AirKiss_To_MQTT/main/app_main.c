@@ -90,7 +90,6 @@ int sock_fd;
 #define BUTTON_GPIO 0
 //设备信息
 #define DEVICE_TYPE "ESP_NetRc_Rx"
-#define TX_UUID "30839893c03e"	//TX UUID
 
 //mqtt
 esp_mqtt_client_handle_t client = NULL;
@@ -134,7 +133,7 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 		ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
 		msg_id = esp_mqtt_client_subscribe(client, MqttTopicSub, 0);
 
-		ESP_LOGI(TAG, "sent subscribe[%s] successful, msg_id=%d", MqttTopicSub, msg_id);
+		ESP_LOGI(TAG, ">>>>> subscribe[%s] successful, msg_id=%d", MqttTopicSub, msg_id);
 		ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
 		//post_data_to_clouds();
 		//data_up_task
@@ -151,11 +150,11 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 		break;
 		//订阅成功
 	case MQTT_EVENT_SUBSCRIBED:
-		ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
+		ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d topic = %s", event->msg_id,event->topic);
 		break;
 		//订阅失败
 	case MQTT_EVENT_UNSUBSCRIBED:
-		ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
+		ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d topic = %s", event->msg_id,event->topic);
 		break;
 		//推送发布消息成功
 	case MQTT_EVENT_PUBLISHED:
@@ -164,7 +163,6 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 		//服务器下发消息到本地成功接收回调
 	case MQTT_EVENT_DATA:
 	{
-		//ESP_LOGI(TAG, " xQueueReceive  data [%s] \n", event->data);
 		if(event->data_len <= 2048)
 		{
 			memset(user_data.allData,0,sizeof(user_data.allData));
@@ -200,8 +198,8 @@ void TaskXMqttRecieve(void *p)
 		.client_id = deviceUUID,
 		.event_handle = MqttCloudsCallBack, //设置回调函数
 		.keepalive = 120,					//心跳
-		.disable_auto_reconnect = false,	//开启自动重连
-		.disable_clean_session = true,		//开启 清除会话
+		.disable_auto_reconnect = false,	//开启自动重连 这里是取反的要注意
+		.disable_clean_session = false,		//开启 清除会话 这里是取反的要注意
 		.buffer_size = 2048,
 	};
 	
@@ -630,9 +628,8 @@ void app_main(void)
 	sprintf((char *)deviceInfo, "{\"type\":\"%s\",\"mac\":\"%s\"}", DEVICE_TYPE, deviceUUID);
 	
 	NetRc_Read_info(&User_HttpSeverInfo);
+	//组建MQTT主题
 	sprintf(MqttTopicSub, "%s/Down", User_HttpSeverInfo.subid);
-
-	//组建MQTT推送的主题
 	sprintf(MqttTopicPub, "%s/Up", deviceUUID);
 
 	ESP_LOGI(TAG, "flagNet: %d", flagNet);
@@ -645,8 +642,8 @@ void app_main(void)
 	Pwm_Init();
 	Led_Init();
 	//OLED_I2C_Init();
-	xTaskCreate(TaskButton, "TaskButton", 1024, NULL, 6, NULL);
 	//xTaskCreate(Task_Sensor, "Task_Sensor", 1024, NULL, 6, NULL);
+	xTaskCreate(TaskButton, "TaskButton", 1024, NULL, 6, NULL);
 	xTaskCreate(Task_ParseJSON, "Task_ParseJSON", 1024*3, NULL, 5, NULL);
 	
 	/* 创建信号量 */
