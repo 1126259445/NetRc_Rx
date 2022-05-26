@@ -303,7 +303,7 @@ void Task_ParseJSON(void *pvParameters)
 			}
 			else
 			{
-				if(esp_get_time() - LastRecvTime > 2000000)
+				if(esp_get_time() - LastRecvTime > 2100000)
 				{
 					Led_SetState(ONE_HZ);
 					ESP_LOGI(TAG, "Net Rc_Tx Data Lost!!!!!!!!!!!!!!");
